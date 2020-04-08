@@ -73,6 +73,9 @@ const diffStudentOutputVsExpected = async (firstMyprogramBaseDirStr: string, inF
         const reMatch = /\r?\n/.exec(studentProgramOut);
         const firstNewlineIdx = reMatch?.index == null ? 0 : reMatch?.index;
         studentProgramOut = studentProgramOut.substring(firstNewlineIdx + 1);
+        if (studentProgramOut.substring(0,1) === "\n"){
+            studentProgramOut = studentProgramOut.substring(1);
+        }
     }
 
     Deno_createSync(outFilename).close();
@@ -82,7 +85,7 @@ const diffStudentOutputVsExpected = async (firstMyprogramBaseDirStr: string, inF
     stuProOutFile.writeSync(new TextEncoder().encode(studentProgramOut));
     stuProOutFile.close();
 
-    let diffProcessArg = [
+    const diffProcessArg = [
         "diff",
         "-Z",
         "-b",
@@ -91,9 +94,6 @@ const diffStudentOutputVsExpected = async (firstMyprogramBaseDirStr: string, inF
         outExpectedFilename,
         outFilename
     ];
-    if (Deno_build_os == "win") {
-        diffProcessArg = ["FC", outExpectedFilename, outFilename];
-    }
 
     const diffPro: Deno_Process = Deno_run(
         {
