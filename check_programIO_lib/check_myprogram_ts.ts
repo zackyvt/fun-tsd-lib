@@ -175,6 +175,6 @@ export const main = async () => {
         }
     }
     if (correctCount > 0){
-        console.log("Remember just because your program worked ok for " + correctCount + " test " + (correctCount > 1? "cases" : "case") + ", it doesn't mean it's perfect!  Your program must work for *all* input as specified in the assigned program specifications!");
+        console.log("\nRemember just because your program worked ok for " + correctCount + " test " + (correctCount > 1? "cases" : "case") + ", it doesn't mean it's perfect!  Your program must work for *all* input as specified in the assigned program specifications!");
     }
 };
