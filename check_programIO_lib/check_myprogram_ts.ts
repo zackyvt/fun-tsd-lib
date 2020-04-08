@@ -106,12 +106,14 @@ const diffStudentOutputVsExpected = async (firstMyprogramBaseDirStr: string, inF
         console.log(
             "Good job!!  No difference from expected output for this example input."
         );
+        return true;
     } else {
         console.log("Unexpected output for this example input:");
         const outExpected: string = txtDec.decode(Deno_readFileSync(inFilename));
         console.log(outExpected);
         console.log("Expected < but got >");
         console.log(diffRes);
+        return false;
     }
 }
 
@@ -155,6 +157,7 @@ export const main = async () => {
         }
     }
 
+    let correctCount = 0;
     for (let idx: number = 0; idx < 100; ++idx) {
         try {
             const inFilename = "in"+(idx === 0? "" : idx) + ".txt";
@@ -163,9 +166,15 @@ export const main = async () => {
             Deno_openSync(inFilename).close();
             Deno_openSync(outExpectedFilename).close();
             console.log("\nChecking test case " + idx);
-            await diffStudentOutputVsExpected(firstMyprogramBaseDirStr, inFilename, outFilename, outExpectedFilename);
+            const perfect = await diffStudentOutputVsExpected(firstMyprogramBaseDirStr, inFilename, outFilename, outExpectedFilename);
+            if (perfect){
+                ++correctCount;
+            }
         } catch (e){
-            return;
+            break;
         }
+    }
+    if (correctCount > 0){
+        console.log("Remember just because your program worked ok for " + correctCount + " test " + (correctCount > 1? "cases" : "case") + ", it doesn't mean it's perfect!  Your program must work for *all* input as specified in the assigned program specifications!");
     }
 };
