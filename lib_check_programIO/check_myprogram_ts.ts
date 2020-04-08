@@ -59,7 +59,7 @@ const diffStudentOutputVsExpected = async (firstMyprogramBaseDirStr: string, inF
 
     const studentProgram: Deno_Process = Deno_run(
         {
-            cmd: ["/bin/sh", "run_program_bash.sh"],
+            cmd: ["sh", "run_program_bash.sh"],
             cwd: firstMyprogramBaseDirStr,
             stdout: "piped",
             stdin: inFile.rid
