@@ -159,19 +159,19 @@ export const main = async () => {
 
     let correctCount = 0;
     for (let idx: number = 0; idx < 100; ++idx) {
+        const inFilename = "in"+(idx === 0? "" : idx) + ".txt";
+        const outFilename = "out"+(idx === 0? "" : idx) + ".txt";
+        const outExpectedFilename = "outExpected"+(idx === 0? "" : idx) + ".txt";
         try {
-            const inFilename = "in"+(idx === 0? "" : idx) + ".txt";
-            const outFilename = "out"+(idx === 0? "" : idx) + ".txt";
-            const outExpectedFilename = "outExpected"+(idx === 0? "" : idx) + ".txt";
             Deno_openSync(inFilename).close();
             Deno_openSync(outExpectedFilename).close();
-            console.log("\nChecking test case " + idx);
-            const perfect = await diffStudentOutputVsExpected(firstMyprogramBaseDirStr, inFilename, outFilename, outExpectedFilename);
-            if (perfect){
-                ++correctCount;
-            }
         } catch (e){
             break;
+        }
+        console.log("\nChecking test case " + idx);
+        const perfect = await diffStudentOutputVsExpected(firstMyprogramBaseDirStr, inFilename, outFilename, outExpectedFilename);
+        if (perfect){
+            ++correctCount;
         }
     }
     if (correctCount > 0){
