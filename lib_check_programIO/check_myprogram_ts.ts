@@ -87,7 +87,7 @@ const diffStudentOutputVsExpected = async (firstMyprogramBaseDirStr: string, inF
 
     const diffProcessArg = [
         "diff",
-        "-Z",
+//        "-Z", (not on Macs...)
         "-b",
         "-d",
         // "--color=always", // no color on old diff
