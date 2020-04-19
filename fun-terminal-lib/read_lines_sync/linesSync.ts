@@ -1,5 +1,5 @@
-import { TextProtoReader } from './textprotoSync.ts';
-import { BufReader } from './bufioSync.ts';
+import { TextProtoReader } from './deno_std/textproto/modSync.ts';
+import { BufReader } from './deno_std/io/bufioSync.ts';
 
 /** Yields a buffer of each line given from the reader. */
 export function* linesBuffer(
