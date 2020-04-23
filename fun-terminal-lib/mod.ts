@@ -44,6 +44,7 @@ export const javaSleep = (ms: number) => {
     if (Date.now() - startTime > ms) break;
   }
 };
+export const threadSleep = javaSleep;
 
 export const currentDate = () => {
   return Date.now();
