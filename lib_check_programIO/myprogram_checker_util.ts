@@ -27,7 +27,8 @@ export type studentProgramQuality = {
     inOutExpFilesCount: number,
     folderStructure: studentProgramAttrQuality,
     diffResults: studentProgramAttrQuality[],
-    inOutExpNullDiffCount: number
+    inOutExpNullDiffCount: number,
+    myprogramOutActual: string[]
 };
 
 /**
@@ -192,7 +193,8 @@ export const checkMyprogramAtBaseDir = async ({ myprogramBaseDir, inOutExpFilePa
         inOutExpFilesCount: inOutExpFilePairs.length,
         inOutExpNullDiffCount: 0,
         diffResults: [],
-        folderStructure: folderStructResult
+        folderStructure: folderStructResult,
+        myprogramOutActual: []
     }
 
     if (folderStructResult.featureCount !== folderStructResult.maxFeatureCount) {
@@ -207,7 +209,9 @@ export const checkMyprogramAtBaseDir = async ({ myprogramBaseDir, inOutExpFilePa
             scribe.log("\nChecking test case " + idx);
 
             const outFilePath: string = outFileDir.join("/") + "/out" + (idx === 0 ? "" : idx) + ".txt";
-            writeStudentProgramOutputFile(outFilePath, postProcessStudentProgramOutput(await runStudentMyProgram(inFilePath, myprogramBaseDirStr)));
+            const stuProgOut: string = await runStudentMyProgram(inFilePath, myprogramBaseDirStr);
+            ret.myprogramOutActual[idx] = stuProgOut
+            writeStudentProgramOutputFile(outFilePath, postProcessStudentProgramOutput(stuProgOut));
             const diffResult: studentProgramAttrQuality = await diffStudentVsExpectedOutput(inFilePath, outFilePath, outExpectedFilePath);
             if (diffResult.featureCount === diffResult.maxFeatureCount) {
                 ++correctCount;
