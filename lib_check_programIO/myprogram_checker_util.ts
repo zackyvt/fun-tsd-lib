@@ -169,7 +169,8 @@ export const diffStudentVsExpectedOutput = async (inFilename: string, outFilenam
 export const runStudentMyProgram = async (inFilename: string, myprogramBaseDir: string): Promise<string> => {
     const inFile = Deno_openSync(inFilename);
     const studentProgram: Deno_Process = Deno_run({
-        cmd: ["sh", "run_program_bash.sh"],
+        //cmd: ["sh", "run_program_bash.sh"],
+        cmd: ["deno", "myprogram.ts"],
         cwd: myprogramBaseDir,
         stdout: "piped",
         stdin: inFile.rid
