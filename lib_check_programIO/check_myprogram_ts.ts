@@ -20,7 +20,8 @@ export const main = async (): Promise<string> => {
         myprogramBaseDir: firstMyprogramBaseDir,
         inOutExpFilePairs: checker.inOutExpectedFilesPaths(["."]),
         outFileDir: ["."],
-        scribe
+        scribe,
+        useStudentRunProgramShScript: true
     })).checkerMessageToStudent;
 };
 

@@ -166,11 +166,14 @@ export const diffStudentVsExpectedOutput = async (inFilename: string, outFilenam
 }
 
 
-export const runStudentMyProgram = async (inFilename: string, myprogramBaseDir: string): Promise<string> => {
+export const runStudentMyProgram = async (inFilename: string, myprogramBaseDir: string, useStudentRunProgramShScript: boolean): Promise<string> => {
     const inFile = Deno_openSync(inFilename);
+    const cmd = useStudentRunProgramShScript ? ["sh", "run_program_bash.sh"] : [Deno.execPath(), "myprogram.ts"];
+    if (!useStudentRunProgramShScript) {
+        console.log("Running student program with: " + "[" + cmd.join(", ") + "]");
+    }
     const studentProgram: Deno_Process = Deno_run({
-        cmd: ["sh", "run_program_bash.sh"],
-        //cmd: ["deno", "myprogram.ts"],
+        cmd,
         cwd: myprogramBaseDir,
         stdout: "piped",
         stdin: inFile.rid
@@ -180,9 +183,19 @@ export const runStudentMyProgram = async (inFilename: string, myprogramBaseDir: 
     return studentProgramOut;
 };
 
-export const checkMyprogramAtBaseDir = async ({ myprogramBaseDir, inOutExpFilePairs, outFileDir, scribe }
-    : { myprogramBaseDir: paths_util.path; inOutExpFilePairs: inOutExpectedFilesPair[]; outFileDir: paths_util.path; scribe: logging_util.Logger })
-    : Promise<studentProgramQuality> => {
+export const checkMyprogramAtBaseDir = async ({
+    myprogramBaseDir,
+    inOutExpFilePairs,
+    outFileDir,
+    scribe,
+    useStudentRunProgramShScript
+}: {
+    myprogramBaseDir: paths_util.path;
+    inOutExpFilePairs: inOutExpectedFilesPair[];
+    outFileDir: paths_util.path;
+    scribe: logging_util.Logger;
+    useStudentRunProgramShScript: boolean;
+}): Promise<studentProgramQuality> => {
     const myprogramBaseDirStr = myprogramBaseDir.join("/");
     scribe.log("Checking program in: " + myprogramBaseDirStr);
 
@@ -210,7 +223,7 @@ export const checkMyprogramAtBaseDir = async ({ myprogramBaseDir, inOutExpFilePa
             scribe.log("\nChecking test case " + idx);
 
             const outFilePath: string = outFileDir.join("/") + "/out" + (idx === 0 ? "" : idx) + ".txt";
-            const stuProgOut: string = await runStudentMyProgram(inFilePath, myprogramBaseDirStr);
+            const stuProgOut: string = await runStudentMyProgram(inFilePath, myprogramBaseDirStr, useStudentRunProgramShScript);
             ret.myprogramOutActual[idx] = stuProgOut
             writeStudentProgramOutputFile(outFilePath, postProcessStudentProgramOutput(stuProgOut));
             const diffResult: studentProgramAttrQuality = await diffStudentVsExpectedOutput(inFilePath, outFilePath, outExpectedFilePath);
