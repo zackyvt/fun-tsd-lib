@@ -102,7 +102,7 @@ export const consolePrint = (...txt: any): void => {
 };
 
 
-const GQG_IN_MYPROGRAM_MSG = 'in "myprogram.js"- ';
+const GQG_IN_MYPROGRAM_MSG = 'in "myprogram.ts"- ';
 const GQG_ERROR_IN_MYPROGRAM_MSG = "Error " + GQG_IN_MYPROGRAM_MSG;
 const GQG_WARNING_IN_MYPROGRAM_MSG = 'Warning ' + GQG_IN_MYPROGRAM_MSG;
 
