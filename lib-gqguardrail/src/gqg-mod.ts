@@ -15,9 +15,9 @@
 export type spriteDomObject = {
     width: (n: number) => spriteDomObject;
     height: (n: number) => spriteDomObject;
-    setAnimation: (o?:object, f?: Function)=>any;
-    css: (attr:string, val:string|number)=>spriteDomObject;
-    playground: (o:object)=>any;
+    setAnimation: (o?: object, f?: Function) => any;
+    css: (attr: string, val: string | number) => spriteDomObject;
+    playground: (o: object) => any;
 };
 declare var $: any;
 declare var Cookies: {
@@ -808,7 +808,7 @@ export const spriteSetAnimation = function (
 ) {
     if (arguments.length === 2 && aGQAnimation != null) {
         spriteObject(spriteNameOrObj).setAnimation(aGQAnimation);
-    } else if (arguments.length === 3  && aGQAnimation != null && typeof callbackFunction === "function") {
+    } else if (arguments.length === 3 && aGQAnimation != null && typeof callbackFunction === "function") {
         spriteObject(spriteNameOrObj).setAnimation(aGQAnimation, callbackFunction);
     } else if (arguments.length === 1) {
         spriteObject(spriteNameOrObj).setAnimation();
