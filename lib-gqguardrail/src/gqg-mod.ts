@@ -117,13 +117,10 @@ const printErrorToConsoleOnce = (() => {
         }
     };
 })();
-const throwConsoleError = (msg: string) => {
+const throwConsoleErrorInMyprogram = (msg: string): never => {
     // Firefox wouldn't print uncaught exceptions with file name/line number
     // but adding "new Error()" to the throw below fixed it...
-    throw new Error(msg);
-};
-const throwConsoleErrorInMyprogram = (msg: string) => {
-    throwConsoleError(GQG_IN_MYPROGRAM_MSG + msg);
+    throw new Error(GQG_IN_MYPROGRAM_MSG + msg);
 };
 
 const throwIfSpriteNameInvalid = (spriteName: string): void => {
@@ -151,7 +148,10 @@ const throwIfNotFiniteNumber = (msg: string, val: any): void => { // e.g. throw 
 };
 
 export const throwOnImgLoadError = (imgUrl: string): void => {
-    // what this function throws cannot be caught by caller tho...
+    // what this function throws must not be caught by caller tho...
+    if (imgUrl.substring(imgUrl.length - ".gif".length).toLowerCase() === ".gif") {
+        throwConsoleErrorInMyprogram("image file format not supported: GIF");
+    }
     let throwableErr = new Error("image file not found: " + imgUrl);
     $("<img/>").on("error", function () {
         if (!!throwableErr && throwableErr.stack &&
@@ -839,7 +839,7 @@ export const forEach2SpritesHit = (() => {
     return (sprite1Name: string, sprite2Name: string, collisionHandlingFunction: CollisionHandlingFn) => {
         if (!printed) {
             printed = true;
-            throwConsoleError("Deprecated function used: forEach2SpritesHit.  Use when2SpritesHit instead for better performance.");
+            throwConsoleErrorInMyprogram("Deprecated function used: forEach2SpritesHit.  Use when2SpritesHit instead for better performance.");
         }
         forEachSpriteSpriteCollisionDo(sprite1Name, sprite2Name, collisionHandlingFunction);
     };
