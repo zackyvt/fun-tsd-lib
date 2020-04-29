@@ -126,18 +126,18 @@ const throwConsoleErrorInMyprogram = (msg: string) => {
     throwConsoleError(GQG_IN_MYPROGRAM_MSG + msg);
 };
 
-const throwIfSpriteNameInvalid = (spriteName: string) => {
+const throwIfSpriteNameInvalid = (spriteName: string): void => {
     if (typeof spriteName !== "string") {
         throwConsoleErrorInMyprogram("Sprite name must be a String, not: " + spriteName);
     } else if (!spriteExists(spriteName)) {
         throwConsoleErrorInMyprogram("Sprite doesn't exist: " + spriteName);
     }
 };
-Number.isFinite = Number.isFinite || function (value) {
+Number.isFinite = Number.isFinite || function (value: any): boolean {
     // see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isFinite
     return typeof value === 'number' && isFinite(value);
 };
-const throwIfNotFiniteNumber = (msg: string, val: any) => { // e.g. throw if NaN, Infinity, null
+const throwIfNotFiniteNumber = (msg: string, val: any): void => { // e.g. throw if NaN, Infinity, null
     if (!Number.isFinite(val)) {
         msg = msg || "Expected a number.";
         msg += " You used";
