@@ -30,7 +30,12 @@ export const pathsToStrs = (
     descendantFilesPathsArr: path[]
 ): string[] => {
     return descendantFilesPathsArr.reduce((prev, val) => {
-        return prev.concat(val.join("/"));
+        return prev.concat(pathToEscapedStr(val));
     }, []);
 };
 
+export const pathToEscapedStr = (p: path): string => {
+    return p.map((val) => {
+        return val.replace("\\", "\\\\").replace("/", "\\/");
+    }).join("/");
+}
