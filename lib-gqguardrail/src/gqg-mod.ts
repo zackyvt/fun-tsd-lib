@@ -895,19 +895,19 @@ export const spriteHitDirection = (
 ): SpriteHitDirectionality => {
     var sprite1Info: SpriteDict = {
         "id": sprite1Id,
-        "xpos": sprite1X,
-        "ypos": sprite1Y,
-        "xspeed": sprite1XSpeed,
-        "yspeed": sprite1YSpeed,
+        "xPos": sprite1X,
+        "yPos": sprite1Y,
+        "xSpeed": sprite1XSpeed,
+        "ySpeed": sprite1YSpeed,
         "height": sprite1Height,
         "width": sprite1Width
     };
     var sprite2Info: SpriteDict = {
         "id": sprite2Id,
-        "xpos": sprite2X,
-        "ypos": sprite2Y,
-        "xspeed": sprite2XSpeed,
-        "yspeed": sprite2YSpeed,
+        "xPos": sprite2X,
+        "yPos": sprite2Y,
+        "xSpeed": sprite2XSpeed,
+        "ySpeed": sprite2YSpeed,
         "height": sprite2Height,
         "width": sprite2Width
     };
@@ -915,10 +915,10 @@ export const spriteHitDirection = (
 };
 
 export type SpritePhysicalDimensions = {
-    "xpos": number;
-    "ypos": number;
-    "xspeed": number; // movement must be by dictionary,
-    "yspeed": number; // with something like x = x + xspeed
+    "xPos": number;
+    "yPos": number;
+    "xSpeed": number; // movement must be by dictionary,
+    "ySpeed": number; // with something like x = x + xSpeed
     "width": number;
     "height": number;
 };
@@ -926,15 +926,15 @@ export type SpriteDict = SpritePhysicalDimensions & {
     "id": string;
     [s: string]: any;
 };
-const spritesSpeedSamples: { [k: string]: { sampleSize: number, xspeedSamples: number[], yspeedSamples: number[], checked: boolean } } = {};
+const spritesSpeedSamples: { [k: string]: { sampleSize: number, xSpeedSamples: number[], ySpeedSamples: number[], checked: boolean } } = {};
 const checkSpriteSpeedUsageCommonErrors = (spriteInfo: SpriteDict) => {
     // A heuristic check for common errors from learners.
     // Check if sprite speeds ever change.  If not, probably doing it wrong.
     if (!spritesSpeedSamples[spriteInfo["id"]]) {
         spritesSpeedSamples[spriteInfo["id"]] = {
             sampleSize: 0,
-            xspeedSamples: [],
-            yspeedSamples: [],
+            xSpeedSamples: [],
+            ySpeedSamples: [],
             checked: false
         };
     } else {
@@ -942,13 +942,13 @@ const checkSpriteSpeedUsageCommonErrors = (spriteInfo: SpriteDict) => {
         const maxSampleSize = 10;
         if (sprite1Sampling.sampleSize < maxSampleSize) {
             ++sprite1Sampling.sampleSize;
-            sprite1Sampling.xspeedSamples.push(spriteInfo["xspeed"]);
-            sprite1Sampling.yspeedSamples.push(spriteInfo["yspeed"]);
+            sprite1Sampling.xSpeedSamples.push(spriteInfo["xSpeed"]);
+            sprite1Sampling.ySpeedSamples.push(spriteInfo["ySpeed"]);
         } else if (!sprite1Sampling.checked) {
             sprite1Sampling.checked = true;
             const ss = sprite1Sampling.sampleSize;
-            const sxSamples = sprite1Sampling.xspeedSamples;
-            const sySamples = sprite1Sampling.yspeedSamples;
+            const sxSamples = sprite1Sampling.xSpeedSamples;
+            const sySamples = sprite1Sampling.ySpeedSamples;
 
             let sameXspeed = true;
             for (let i = 1; i < ss; ++i) {
@@ -959,9 +959,9 @@ const checkSpriteSpeedUsageCommonErrors = (spriteInfo: SpriteDict) => {
             }
             if (sameXspeed && sxSamples[0] !== 0) {
                 console.log(GQG_WARNING_IN_MYPROGRAM_MSG
-                    + "sprite hit direction functionality- possibly wrong xpos calculation for sprite: "
+                    + "sprite hit direction functionality- possibly wrong xPos calculation for sprite: "
                     + spriteInfo["id"]
-                    + ".  Ensure xspeed used validly if sprite hit directionality seems wrong.");
+                    + ".  Ensure xSpeed used validly if sprite hit directionality seems wrong.");
             }
 
             let sameYspeed = true;
@@ -973,9 +973,9 @@ const checkSpriteSpeedUsageCommonErrors = (spriteInfo: SpriteDict) => {
             }
             if (sameYspeed && sySamples[0] !== 0) {
                 console.log(GQG_WARNING_IN_MYPROGRAM_MSG
-                    + "sprite hit direction functionality- possibly wrong ypos calculation for sprite: "
+                    + "sprite hit direction functionality- possibly wrong yPos calculation for sprite: "
                     + spriteInfo["id"]
-                    + ".  Ensure yspeed used validly if sprite hit directionality seems wrong.");
+                    + ".  Ensure ySpeed used validly if sprite hit directionality seems wrong.");
             }
         }
     }
@@ -1011,10 +1011,10 @@ const spriteHitDirImpl = (
        Parameters sprite{1,2}Info are dictionaries with at least these keys:
        {
        "id": "actualSpriteName",
-       "xpos": 500,
-       "ypos": 200,
-       "xspeed": -8,  // movement must be by dictionary,
-       "yspeed": 0,   // with something like x = x + xspeed
+       "xPos": 500,
+       "yPos": 200,
+       "xSpeed": -8,  // movement must be by dictionary,
+       "ySpeed": 0,   // with something like x = x + xSpeed
        "height": 74,
        "width": 75
        }
@@ -1029,18 +1029,18 @@ const spriteHitDirImpl = (
     };
 
     // current horizontal position
-    var s1left = sprite1Info["xpos"];
+    var s1left = sprite1Info["xPos"];
     var s1right = s1left + sprite1Info["width"];
 
-    var s2left = sprite2Info["xpos"];
+    var s2left = sprite2Info["xPos"];
     var s2right = s2left + sprite2Info["width"];
 
-    // reverse horizontal position by xspeed with percent margin
-    var sprite1XSpeed = sprite1Info["xspeed"] * percentMargin;
+    // reverse horizontal position by xSpeed with percent margin
+    var sprite1XSpeed = sprite1Info["xSpeed"] * percentMargin;
     s1left = s1left - sprite1XSpeed;
     s1right = s1right - sprite1XSpeed;
 
-    var sprite2XSpeed = sprite2Info["xspeed"] * percentMargin;
+    var sprite2XSpeed = sprite2Info["xSpeed"] * percentMargin;
     s2left = s2left - sprite2XSpeed;
     s2right = s2right - sprite2XSpeed;
 
@@ -1052,18 +1052,18 @@ const spriteHitDirImpl = (
     }
 
     // current vertical position
-    var s1top = sprite1Info["ypos"];
+    var s1top = sprite1Info["yPos"];
     var s1bottom = s1top + sprite1Info["height"];
 
-    var s2top = sprite2Info["ypos"];
+    var s2top = sprite2Info["yPos"];
     var s2bottom = s2top + sprite2Info["height"];
 
-    // reverse vertical position by yspeed with percent margin
-    var sprite1YSpeed = sprite1Info["yspeed"] * percentMargin;
+    // reverse vertical position by ySpeed with percent margin
+    var sprite1YSpeed = sprite1Info["ySpeed"] * percentMargin;
     s1top = s1top - sprite1YSpeed;
     s1bottom = s1bottom - sprite1YSpeed;
 
-    var sprite2YSpeed = sprite2Info["yspeed"] * percentMargin;
+    var sprite2YSpeed = sprite2Info["ySpeed"] * percentMargin;
     s2top = s2top - sprite2YSpeed;
     s2bottom = s2bottom - sprite2YSpeed;
 
