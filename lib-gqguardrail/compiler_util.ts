@@ -90,9 +90,9 @@ export const compileStrippingModuleSyntax = async (
         let emitCode: string = emitMap[path];
 
         if (emitOnlyFile != null) {
-            if (emitOnlyFile === ""){
+            if (emitOnlyFile === "") {
                 path = (compOpts["outDir"] ? compOpts["outDir"] : ".") + "/" + path.substring(path.lastIndexOf("/") + 1);
-            } else if (path.indexOf(emitOnlyFile) >= 0){
+            } else if (path.indexOf(emitOnlyFile) >= 0) {
                 path = (compOpts["outDir"] ? compOpts["outDir"] : ".") + "/" + emitOnlyFile;
             } else {
                 continue;
@@ -105,7 +105,7 @@ export const compileStrippingModuleSyntax = async (
         emitCode = stripImportStatements(emitCode);
         emitCode = stripExportSyntax(emitCode);
 
-        Deno.mkdirSync(path.substring(0, path.lastIndexOf("/")), { recursive: true});
+        Deno.mkdirSync(path.substring(0, path.lastIndexOf("/")), { recursive: true });
         Deno.writeFileSync(path, textEncoder.encode(emitCode));
     }
 };
@@ -124,7 +124,7 @@ const stripImportStatements = (emitCode: string): string => {
     return emitCode;
 }
 
-const stripExportSyntax = (emitCode: string):string => {
+const stripExportSyntax = (emitCode: string): string => {
     let exportStrippedWarned = false;
     const exportMatches = emitCode.matchAll(/export (let|const|var)/g);
     for (let match of exportMatches) {
