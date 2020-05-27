@@ -4,8 +4,36 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
+const forceUpdate = () => {
+    const textEncoder = new TextEncoder();
+    const textDecoder = new TextDecoder();
+    const shScriptName = "compile_myprogram_bash.sh";
+    const updatedFlagFilePath = "libs/update1.txt";
+    const reloadFlag = "--reload ";
+
+    try { // check for updated marker
+        let x = Deno.readFileSync(updatedFlagFilePath);
+        let shScript = textDecoder.decode(Deno.readFileSync(shScriptName));
+        shScript = shScript.replace(reloadFlag, "");
+        //console.log(shScript);
+        Deno.writeFileSync(shScriptName, textEncoder.encode(shScript));
+    } catch (c) {
+        try { // if not updated:
+            let shScript = textDecoder.decode(Deno.readFileSync(shScriptName));
+            const idx = shScript.indexOf("--allow-read");
+            shScript = shScript.substring(0, idx) + reloadFlag + shScript.substring(idx);
+            //console.log(shScript);
+            Deno.writeFileSync(shScriptName, textEncoder.encode(shScript));
+            // insert updated marker
+            Deno.writeFileSync(updatedFlagFilePath, textEncoder.encode("updated1"));
+        } catch (c) {
+            return;
+        }
+    }
+}
 
 export const main = async () => {
+    forceUpdate();
     const compOpts: Deno.CompilerOptions = {
         alwaysStrict: true,
         sourceMap: false,
