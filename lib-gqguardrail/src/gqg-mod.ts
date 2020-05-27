@@ -18,6 +18,8 @@ export type spriteDomObject = {
     setAnimation: (o?: object, f?: Function) => any;
     css: (attr: string, val: string | number) => spriteDomObject;
     playground: (o: object) => any;
+    html: (htmlText: string) => spriteDomObject;
+    text: (text: string) => spriteDomObject;
 };
 declare var $: any;
 declare var Cookies: {
