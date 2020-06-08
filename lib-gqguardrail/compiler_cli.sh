@@ -25,7 +25,7 @@ else
 fi
 echo "" 1>&2
 
-"$deno_app" --allow-read --allow-write="./" ./compiler_driver.ts --build "./build" "$@"
+"$deno_app" run --unstable --allow-read --allow-write="./" ./compiler_driver.ts --build "./build" "$@"
 
 #if [ $SHLVL -lt 2 ]; then
 #  $SHELL
