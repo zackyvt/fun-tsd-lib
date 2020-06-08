@@ -926,7 +926,7 @@ export type SpritePhysicalDimensions = {
 };
 export type SpriteDict = SpritePhysicalDimensions & {
     "id": string;
-    [s: string]: any;
+    [s: string]: string | number | boolean | object;
 };
 const spritesSpeedSamples: { [k: string]: { sampleSize: number, xSpeedSamples: number[], ySpeedSamples: number[], checked: boolean } } = {};
 const checkSpriteSpeedUsageCommonErrors = (spriteInfo: SpriteDict) => {
