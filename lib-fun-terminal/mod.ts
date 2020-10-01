@@ -19,12 +19,12 @@ export const load = (noop: string)=>{};
 const _textEncoder = new TextEncoder();
 const _stdout_file = new Deno.File(Deno_stdout.rid);
 
-export const print = (str: any, ...rest:string[]):void=>{ // prints trailing newline
-    filePrintTrailer(_stdout_file, "\n", "" + str, ...rest);
+export const print = (str?: string|number, ...rest:(string|number)[]):void=>{ // prints trailing newline
+    filePrintTrailer(_stdout_file, "\n", (str == null ? "" : "" + str), ...rest);
 };
 
-export const pr = (str: any, ...rest:string[]):void=>{ // prints no trailing newline
-    filePrintTrailer(_stdout_file, "", "" + str, ...rest);
+export const pr = (str?: string|number, ...rest:(string|number)[]):void=>{ // prints no trailing newline
+    filePrintTrailer(_stdout_file, "", (str == null ? "" : "" + str), ...rest);
 };
 
 const _stdinBuf = new bufio.BufReaderSync(Deno.stdin);
@@ -162,8 +162,8 @@ var filePr = function(openedFileWriterAppender, str){
 export const filePrintTrailer = (
     openedFileWriterAppender: Deno_File,
     trailer: string,
-    str: string,
-    ...rest:string[]
+    str: any,
+    ...rest:any[]
   ) => {
     if (!str) {
       str = "";
