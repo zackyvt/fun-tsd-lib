@@ -131,7 +131,7 @@ export const postProcessStudentProgramOutput = (studentProgramOut: string): stri
 
 export const diffStudentVsExpectedOutput = async (inFilename: string, outFilename: string, outExpectedFilename: string): Promise<studentProgramAttrQuality> => {
     const diffProcessArg = [
-        "diff",
+        (Deno.build.os == "windows") ? "fc" : "diff",
         // "--color=always", // no color on old diff on Macs
         outExpectedFilename,
         outFilename
@@ -168,7 +168,11 @@ export const diffStudentVsExpectedOutput = async (inFilename: string, outFilenam
 
 export const runStudentMyProgram = async (inFilename: string, myprogramBaseDir: string, useStudentRunProgramShScript: boolean): Promise<string> => {
     const inFile = Deno_openSync(inFilename);
-    const cmd = useStudentRunProgramShScript ? ["sh", "run_program_bash.sh"] : [Deno.execPath(), "myprogram.ts"];
+    const winCmd = ["cmd", "/C", "run_program_bash.sh"];
+    const shellCmd = ["sh", "run_program_bash.sh"];
+    const directCmd = [Deno.execPath(), "run", "myprogram.ts"];
+    const cmd = !useStudentRunProgramShScript ? directCmd :
+        (Deno.build.os == "windows" ? winCmd : shellCmd);
     if (!useStudentRunProgramShScript) {
         console.log("Running student program with: " + "[" + cmd.join(", ") + "]");
     }
