@@ -1,6 +1,6 @@
 "use strict";
 
-const Deno_readdirSync = Deno.readdirSync;
+const Deno_readdirSync = Deno.readDirSync;
 
 export type path = string[]; // like ["/", "local", "bin"]
 
@@ -10,13 +10,14 @@ export const relativePathsOfFilesInDir = (
 ): path[] => {
     const filesDirsInBaseDirPaths: path[] = [];
     const filesDirsInBaseDirInfo = Deno_readdirSync(baseDirPath.join("/"));
-    for (let i: number = 0; i < filesDirsInBaseDirInfo.length; ++i) {
-        const fileOrDir = filesDirsInBaseDirInfo[i];
-        if (fileOrDir.isDirectory()) {
+    for (let fileOrDir of filesDirsInBaseDirInfo){
+    //for (let i: number = 0; i < filesDirsInBaseDirInfo.length; ++i) {
+        //const fileOrDir = filesDirsInBaseDirInfo[i];
+        if (fileOrDir.isDirectory) {
             const subDirPath = baseDirPath.concat(fileOrDir.name ? fileOrDir.name : "");
             const enclosedFilesDirsPaths: path[] = relativePathsOfFilesInDir(subDirPath, fileNamesToFind);
             filesDirsInBaseDirPaths.push(...enclosedFilesDirsPaths);
-        } else if (fileOrDir.isFile() && fileOrDir.name
+        } else if (fileOrDir.isFile && fileOrDir.name
             && (fileNamesToFind == null || fileNamesToFind.find(val => { return val === fileOrDir.name }))) {
             const filePath = baseDirPath.concat(fileOrDir.name);
             filesDirsInBaseDirPaths.push(filePath);
