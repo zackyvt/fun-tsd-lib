@@ -17,12 +17,14 @@ import * as bufio from "./deno_std/io/bufio.ts";
 
 export const load = (noop: string)=>{};
 const _textEncoder = new TextEncoder();
-
-export const print = console.log; // prints trailing newline
-
 const _stdout_file = new Deno.File(Deno_stdout.rid);
-export const pr = (str: string, ...rest:string[]):void=>{ // prints no trailing newline
-    filePrintTrailer(_stdout_file, "", str, ...rest);
+
+export const print = (str: any, ...rest:string[]):void=>{ // prints trailing newline
+    filePrintTrailer(_stdout_file, "\n", "" + str, ...rest);
+};
+
+export const pr = (str: any, ...rest:string[]):void=>{ // prints no trailing newline
+    filePrintTrailer(_stdout_file, "", "" + str, ...rest);
 };
 
 const _stdinBuf = new bufio.BufReaderSync(Deno.stdin);
