@@ -196,7 +196,8 @@ export const diffStudentVsExpectedOutput = async (inFilename: string, outFilenam
         let log: string = "";
         log += "Unexpected output for this example input:" + "\n";
         log += textDecoderUtf8.decode(Deno_readFileSync(inFilename)) + "\n";
-        log += "Expected < but got >" + "\n";
+        log += (Deno.build.os == "windows") ? "See differences below\n" 
+            : "See differences below (Expected - but got +)\n"; // "Expected < but got >\n"
         log += diffRes;
         ret.featureCount = 0;
         ret.log = log;
