@@ -139,7 +139,7 @@ export const postProcessStudentProgramOutput = (studentProgramOut: string): stri
                 break;
             }
         }
-        studentProgramOut = studentProgramOut.substring(0, cutIdx + 1);
+        studentProgramOut = studentProgramOut.substring(0, cutIdx); // was cutIdx + 1. hack to work on windows fc
     }
 
     // strip out first line if it should be "Using deno"...
