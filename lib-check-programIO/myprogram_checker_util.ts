@@ -162,12 +162,19 @@ export const diffStudentVsExpectedOutput = async (inFilename: string, outFilenam
         outFilename = (outFilename.substring(0, 2) === "./") ? outFilename.substring(2) : outFilename;
         outExpectedFilename = (outExpectedFilename.substring(0, 2) === "./") ? outExpectedFilename.substring(2) : outExpectedFilename;
     }
-    const diffProcessArg = [
-        (Deno.build.os == "windows") ? "fc" : "diff",
+    const winFcCmd = [
+        "fc",
+        outExpectedFilename,
+        outFilename
+    ];
+    const diffCmd = [
+        "diff",
+        "-du",
         // "--color=always", // no color on old diff on Macs
         outExpectedFilename,
         outFilename
     ];
+    const diffProcessArg = (Deno.build.os == "windows") ? winFcCmd: diffCmd;
 
     const diffPro: Deno_Process = Deno_run({
         cmd: diffProcessArg,
