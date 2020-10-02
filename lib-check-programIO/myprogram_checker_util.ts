@@ -168,7 +168,7 @@ export const diffStudentVsExpectedOutput = async (inFilename: string, outFilenam
 
 export const runStudentMyProgram = async (inFilename: string, myprogramBaseDir: string, useStudentRunProgramShScript: boolean): Promise<string> => {
     const inFile = Deno_openSync(inFilename);
-    const winCmd = ["cmd", "/C", "run_program_bash.sh"];
+    const winCmd = ["cmd", "/C", "run_program_windows.bat"];
     const shellCmd = ["sh", "run_program_bash.sh"];
     const directCmd = [Deno.execPath(), "run", "myprogram.ts"];
     const cmd = !useStudentRunProgramShScript ? directCmd :
