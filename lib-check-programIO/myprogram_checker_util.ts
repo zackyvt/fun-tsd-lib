@@ -179,7 +179,7 @@ export const diffStudentVsExpectedOutput = async (inFilename: string, outFilenam
         maxFeatureCount: 1,
         log: ""
     };
-    if (diffRes == "") {
+    if (diffRes == "" || (Deno.build.os == "windows" && diffRes.indexOf("FC: no differences encountered") > -1)) {
         ret.featureCount = 1;
         ret.log = "Good job!!  No difference from expected output for this example input.";
         return ret;
