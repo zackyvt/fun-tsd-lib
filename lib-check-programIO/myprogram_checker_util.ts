@@ -130,6 +130,10 @@ export const postProcessStudentProgramOutput = (studentProgramOut: string): stri
 
 
 export const diffStudentVsExpectedOutput = async (inFilename: string, outFilename: string, outExpectedFilename: string): Promise<studentProgramAttrQuality> => {
+    if (Deno.build.os == "windows"){
+        outFilename = (outFilename.substring(0, 2) === "./") ? outFilename.substring(2) : outFilename;
+        outExpectedFilename = (outExpectedFilename.substring(0, 2) === "./") ? outExpectedFilename.substring(2) : outExpectedFilename;
+    }
     const diffProcessArg = [
         (Deno.build.os == "windows") ? "fc" : "diff",
         // "--color=always", // no color on old diff on Macs
