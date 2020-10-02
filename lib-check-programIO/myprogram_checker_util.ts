@@ -117,6 +117,8 @@ export const writeStudentProgramOutputFile = (outFilename: string, studentProgra
 
 export const postProcessStudentProgramOutput = (studentProgramOut: string): string => {
     if (Deno.build.os == "windows"){
+        studentProgramOut = studentProgramOut.replaceAll("\r\n", "\n");
+
         const headerTag: string = "deno run -A myprogram.ts";
         studentProgramOut = studentProgramOut.substring(studentProgramOut.indexOf(headerTag) + headerTag.length);
         let cutIdx = 0;
@@ -139,7 +141,7 @@ export const postProcessStudentProgramOutput = (studentProgramOut: string): stri
                 break;
             }
         }
-        studentProgramOut = studentProgramOut.substring(0, cutIdx); // was cutIdx + 1. hack to work on windows fc
+        studentProgramOut = studentProgramOut.substring(0, cutIdx + 1);
     }
 
     // strip out first line if it should be "Using deno"...
