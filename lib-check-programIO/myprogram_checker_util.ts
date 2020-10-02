@@ -116,6 +116,32 @@ export const writeStudentProgramOutputFile = (outFilename: string, studentProgra
 }
 
 export const postProcessStudentProgramOutput = (studentProgramOut: string): string => {
+    if (Deno.build.os == "windows"){
+        const headerTag: string = "deno run -A myprogram.ts";
+        studentProgramOut = studentProgramOut.substring(studentProgramOut.indexOf(headerTag) + headerTag.length);
+        let cutIdx = 0;
+        while (cutIdx < studentProgramOut.length){
+            if (studentProgramOut[cutIdx] !== "\n"){
+                ++cutIdx;
+            } else {
+                ++cutIdx;
+                break;
+            }
+        }
+        studentProgramOut = studentProgramOut.substring(cutIdx);
+
+        cutIdx = studentProgramOut.lastIndexOf(">pause");
+        while (cutIdx >= 0){
+            if (studentProgramOut[cutIdx] !== "\n"){
+                --cutIdx;
+            } else {
+                --cutIdx;
+                break;
+            }
+        }
+        studentProgramOut = studentProgramOut.substring(0, cutIdx + 1);
+    }
+
     // strip out first line if it should be "Using deno"...
     if (0 === studentProgramOut.indexOf("Using deno")) {
         const reMatch = /\r?\n/.exec(studentProgramOut);
