@@ -33,7 +33,9 @@ export const getInput = (): string => {
   if (aLine == Deno_EOF) {
     return "";
   }
-  return aLine.substring(0,aLine.length-1);
+  const lastCharIdx = aLine.length-1;
+  const secondLastCharIdx = lastCharIdx-1;
+  return aLine.substring(0, aLine.charAt(secondLastCharIdx) === "\r" ? secondLastCharIdx : lastCharIdx);
 };
 /*var getInput = (function(){
     var stdin = new java.io.BufferedReader(new java.io.InputStreamReader(java.lang.System['in']));
