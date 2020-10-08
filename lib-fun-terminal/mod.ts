@@ -19,11 +19,11 @@ export const load = (noop: string)=>{};
 const _textEncoder = new TextEncoder();
 const _stdout_file = new Deno.File(Deno_stdout.rid);
 
-export const print = (str?: string|number, ...rest:(string|number)[]):void=>{ // prints trailing newline
+export const print = (str?: string|number|boolean, ...rest:(string|number|boolean)[]):void=>{ // prints trailing newline
     filePrintTrailer(_stdout_file, "\n", (str == null ? "" : "" + str), ...rest);
 };
 
-export const pr = (str?: string|number, ...rest:(string|number)[]):void=>{ // prints no trailing newline
+export const pr = (str?: string|number|boolean, ...rest:(string|number|boolean)[]):void=>{ // prints no trailing newline
     filePrintTrailer(_stdout_file, "", (str == null ? "" : "" + str), ...rest);
 };
 
