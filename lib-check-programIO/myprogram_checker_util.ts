@@ -28,7 +28,8 @@ export type studentProgramQuality = {
     folderStructure: studentProgramAttrQuality,
     diffResults: studentProgramAttrQuality[],
     inOutExpNullDiffCount: number,
-    myprogramOutActual: string[]
+    myprogramOutActual: string[],
+    myprogramStdErrActual: string[]
 };
 
 /**
@@ -206,7 +207,11 @@ export const diffStudentVsExpectedOutput = async (inFilename: string, outFilenam
 }
 
 
-export const runStudentMyProgram = async (inFilename: string, myprogramBaseDir: string, useStudentRunProgramShScript: boolean): Promise<string> => {
+export const runStudentMyProgram = async (inFilename: string, myprogramBaseDir: string, useStudentRunProgramShScript: boolean)
+    : Promise<{
+        stdout: string,
+        stderr: string
+    }> => {
     const inFile = Deno_openSync(inFilename);
     const winCmd = ["cmd", "/C", "run_program_windows.bat"];
     const shellCmd = ["sh", "run_program_bash.sh"];
@@ -228,11 +233,17 @@ export const runStudentMyProgram = async (inFilename: string, myprogramBaseDir: 
         cmd,
         cwd: myprogramBaseDir,
         stdout: "piped",
-        stdin: inFile.rid
+        stdin: inFile.rid,
+        stderr: "piped"
     });
     let studentProgramOut: string = textDecoderUtf8.decode(await studentProgram.output());
+    const studentProgramErr: string = textDecoderUtf8.decode(await studentProgram.stderrOutput());
+    console.log(studentProgramErr);
     inFile.close();
-    return studentProgramOut;
+    return {
+        stdout: studentProgramOut,
+        stderr: studentProgramErr
+    };
 };
 
 export const checkMyprogramAtBaseDir = async ({
@@ -261,7 +272,8 @@ export const checkMyprogramAtBaseDir = async ({
         inOutExpNullDiffCount: 0,
         diffResults: [],
         folderStructure: folderStructResult,
-        myprogramOutActual: []
+        myprogramOutActual: [],
+        myprogramStdErrActual: []
     }
 
     if (folderStructResult.featureCount !== folderStructResult.maxFeatureCount) {
@@ -276,9 +288,14 @@ export const checkMyprogramAtBaseDir = async ({
             scribe.log("\nChecking test case " + idx);
 
             const outFilePath: string = outFileDir.join("/") + "/out" + (idx === 0 ? "" : idx) + ".txt";
-            const stuProgOut: string = await runStudentMyProgram(inFilePath, myprogramBaseDirStr, useStudentRunProgramShScript);
-            ret.myprogramOutActual[idx] = stuProgOut
-            writeStudentProgramOutputFile(outFilePath, postProcessStudentProgramOutput(stuProgOut));
+            const stuProgOutErr: {
+                stdout: string,
+                stderr: string
+            } = await runStudentMyProgram(inFilePath, myprogramBaseDirStr, useStudentRunProgramShScript);
+            ret.myprogramOutActual[idx] = stuProgOutErr.stdout;
+            ret.myprogramStdErrActual[idx] = stuProgOutErr.stderr;
+            scribe.log(stuProgOutErr.stderr);
+            writeStudentProgramOutputFile(outFilePath, postProcessStudentProgramOutput(stuProgOutErr.stdout));
             const diffResult: studentProgramAttrQuality = await diffStudentVsExpectedOutput(inFilePath, outFilePath, outExpectedFilePath);
             if (diffResult.featureCount === diffResult.maxFeatureCount) {
                 ++correctCount;
