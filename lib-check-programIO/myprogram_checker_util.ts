@@ -249,6 +249,7 @@ export const checkMyprogramAtBaseDir = async ({
     useStudentRunProgramShScript: boolean;
 }): Promise<studentProgramQuality> => {
     const myprogramBaseDirStr = myprogramBaseDir.join("/");
+    console.log("===========================================");
     scribe.log("Checking program in: " + myprogramBaseDirStr);
 
     const folderStructResult = checkStudentProjectFolderStructure(myprogramBaseDir);
