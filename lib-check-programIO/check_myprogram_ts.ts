@@ -7,11 +7,11 @@ import * as checker from "./myprogram_checker_util.ts";
 import * as logging_util from "./logging_util.ts";
 
 export const main = async (): Promise<string> => {
-    const scribe: logging_util.Logger = new logging_util.Logger(true);
     const allPaths = paths_util.relativePathsOfFilesInDir(["."], ["myprogram.ts"]);
     if (allPaths.length <= 0) {
-        scribe.log("No myprogram.ts found!  Nothing to check.");
-        return scribe.messagesStr();
+        const msg = "No myprogram.ts found!  Nothing to check.";
+        console.log(msg);
+        return msg;
     }
 
     const firstMyprogramBaseDir: paths_util.path = allPaths[0];
@@ -20,7 +20,6 @@ export const main = async (): Promise<string> => {
         myprogramBaseDir: firstMyprogramBaseDir,
         inOutExpFilePairs: checker.inOutExpectedFilesPaths(["."]),
         outFileDir: ["."],
-        scribe,
         useStudentRunProgramShScript: true
     })).checkerMessageToStudent;
 };
