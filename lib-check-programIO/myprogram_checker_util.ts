@@ -210,12 +210,20 @@ export const runStudentMyProgram = async (inFilename: string, myprogramBaseDir: 
     const inFile = Deno_openSync(inFilename);
     const winCmd = ["cmd", "/C", "run_program_windows.bat"];
     const shellCmd = ["sh", "run_program_bash.sh"];
-    const directCmd = [Deno.execPath(), "run", "myprogram.ts"];
+    const directCmd = ["deno", "run", "myprogram.ts"];
     const cmd = !useStudentRunProgramShScript ? directCmd :
         (Deno.build.os == "windows" ? winCmd : shellCmd);
+    
     if (!useStudentRunProgramShScript) {
+        const echoProgram: Deno_Process = Deno_run({
+            cmd: ["which", "deno"],
+            stdout: "piped"
+        });
+        const denoExecPath: string = textDecoderUtf8.decode(await echoProgram.output());
+        console.log("Using deno at: " + denoExecPath.substring(0, denoExecPath.length-1));
         console.log("Running student program with: " + "[" + cmd.join(", ") + "]");
     }
+
     const studentProgram: Deno_Process = Deno_run({
         cmd,
         cwd: myprogramBaseDir,
