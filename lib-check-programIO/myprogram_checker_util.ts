@@ -250,15 +250,14 @@ export const checkMyprogramAtBaseDir = async ({
     myprogramBaseDir,
     inOutExpFilePairs,
     outFileDir,
-    scribe,
     useStudentRunProgramShScript
 }: {
     myprogramBaseDir: paths_util.path;
     inOutExpFilePairs: inOutExpectedFilesPair[];
     outFileDir: paths_util.path;
-    scribe: logging_util.Logger;
     useStudentRunProgramShScript: boolean;
 }): Promise<studentProgramQuality> => {
+    const scribe: logging_util.Logger = new logging_util.Logger(true);
     const myprogramBaseDirStr = myprogramBaseDir.join("/");
     console.log("===========================================");
     scribe.log("Checking program in: " + myprogramBaseDirStr);
