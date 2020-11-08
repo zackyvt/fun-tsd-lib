@@ -159,22 +159,22 @@ export const postProcessStudentProgramOutput = (studentProgramOut: string): stri
 };
 
 
-export const diffStudentVsExpectedOutput = async (inFilename: string, outFilename: string, outExpectedFilename: string): Promise<studentProgramAttrQuality> => {
+export const diffStudentVsExpectedOutput = async (inFilePath: string, outFilePath: string, outExpectedFilePath: string): Promise<studentProgramAttrQuality> => {
     if (Deno.build.os == "windows"){
-        outFilename = (outFilename.substring(0, 2) === "./") ? outFilename.substring(2) : outFilename;
-        outExpectedFilename = (outExpectedFilename.substring(0, 2) === "./") ? outExpectedFilename.substring(2) : outExpectedFilename;
+        outFilePath = (outFilePath.substring(0, 2) === "./") ? outFilePath.substring(2) : outFilePath;
+        outExpectedFilePath = (outExpectedFilePath.substring(0, 2) === "./") ? outExpectedFilePath.substring(2) : outExpectedFilePath;
     }
     const winFcCmd = [
         "fc",
-        outExpectedFilename,
-        outFilename
+        outExpectedFilePath,
+        outFilePath
     ];
     const diffCmd = [
         "diff",
         "-du",
         // "--color=always", // no color on old diff on Macs
-        outExpectedFilename,
-        outFilename
+        outExpectedFilePath,
+        outFilePath
     ];
     const diffProcessArg = (Deno.build.os == "windows") ? winFcCmd: diffCmd;
 
@@ -197,13 +197,13 @@ export const diffStudentVsExpectedOutput = async (inFilename: string, outFilenam
     } else {
         let log: string = "";
         log += "Unexpected output for this example input:" + "\n";
-        log += textDecoderUtf8.decode(Deno_readFileSync(inFilename)) + "\n";
+        log += textDecoderUtf8.decode(Deno_readFileSync(inFilePath)) + "\n";
         log += (Deno.build.os == "windows") ? "See differences below\n" 
             : "See differences below (Expected - but got +)\n"; // "Expected < but got >\n"
         log += diffRes;
 
-        const file1: string = textDecoderUtf8.decode(Deno_readFileSync(outFilename));
-        const file2: string = textDecoderUtf8.decode(Deno_readFileSync(outExpectedFilename));    
+        const file1: string = textDecoderUtf8.decode(Deno_readFileSync(outFilePath));
+        const file2: string = textDecoderUtf8.decode(Deno_readFileSync(outExpectedFilePath));    
         ret.featureCount = string_comp.getEditDistanceNormalized(file1, file2);
         ret.log = log;
         return ret;
