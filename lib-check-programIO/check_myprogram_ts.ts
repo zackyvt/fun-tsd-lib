@@ -4,7 +4,7 @@ const Deno_openSync = Deno.openSync;
 
 import * as paths_util from "./paths_util.ts";
 import * as checker from "./myprogram_checker_util.ts";
-import * as logging_util from "./logging_util.ts";
+//import * as logging_util from "./logging_util.ts";
 
 export const main = async (): Promise<string> => {
     const allPaths = paths_util.relativePathsOfFilesInDir(["."], ["myprogram.ts"]);
