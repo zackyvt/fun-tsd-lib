@@ -204,7 +204,7 @@ export const diffStudentVsExpectedOutput = async (inFilePath: string, outFilePat
 
         const file1: string = textDecoderUtf8.decode(Deno_readFileSync(outFilePath));
         const file2: string = textDecoderUtf8.decode(Deno_readFileSync(outExpectedFilePath));    
-        ret.featureCount = string_comp.getEditDistanceNormalized(file1, file2);
+        ret.featureCount = 1 - string_comp.getEditDistanceNormalized(file1, file2);
         ret.log = log;
         return ret;
     }
