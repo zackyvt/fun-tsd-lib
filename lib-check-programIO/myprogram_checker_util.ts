@@ -29,6 +29,7 @@ export type studentProgramQuality = {
     folderStructure: studentProgramAttrQuality,
     diffResults: studentProgramAttrQuality[],
     inOutExpNullDiffCount: number,
+    invNormEditDist: number,
     myprogramOutActual: string[],
     myprogramStdErrActual: string[]
 };
@@ -273,6 +274,7 @@ export const checkMyprogramAtBaseDir = async ({
         checkerMessageToStudent: "",
         inOutExpFilesCount: inOutExpFilePairs.length,
         inOutExpNullDiffCount: 0,
+        invNormEditDist: 0,
         diffResults: [],
         folderStructure: folderStructResult,
         myprogramOutActual: [],
@@ -285,6 +287,7 @@ export const checkMyprogramAtBaseDir = async ({
         scribe.log("Error: checker is missing in.txt or outExpected.txt file(s).");
     } else {
         let correctCount = 0;
+        let inverseEditDist = 0;
         for (let idx: number = 0; idx < inOutExpFilePairs.length; ++idx) {
             const inFilePath: string = inOutExpFilePairs[idx].inFilePath.join("/");
             const outExpectedFilePath: string = inOutExpFilePairs[idx].outExpectedFilePath.join("/");
@@ -303,10 +306,12 @@ export const checkMyprogramAtBaseDir = async ({
             if (diffResult.featureCount === diffResult.maxFeatureCount) {
                 ++correctCount;
             }
+            inverseEditDist += diffResult.featureCount;
             scribe.log(diffResult.log);
             ret.diffResults[idx] = diffResult;
         }
         ret.inOutExpNullDiffCount = correctCount;
+        ret.invNormEditDist = inverseEditDist;
         if (correctCount > 0) {
             scribe.log("\nRemember just because your program worked ok for " + correctCount + " test " + (correctCount > 1 ? "cases" : "case") + ", it doesn't mean it's perfect!  Your program must work for *all* input as specified in the assigned program specifications!");
         }
