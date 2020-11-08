@@ -8,6 +8,7 @@ const Deno_run = Deno.run;
 
 import * as paths_util from "./paths_util.ts";
 import * as logging_util from "./logging_util.ts";
+import * as string_comp from "./string_comparison.ts";
 
 const textDecoderUtf8 = new TextDecoder("utf-8");
 const textEncoder = new TextEncoder();
@@ -200,7 +201,10 @@ export const diffStudentVsExpectedOutput = async (inFilename: string, outFilenam
         log += (Deno.build.os == "windows") ? "See differences below\n" 
             : "See differences below (Expected - but got +)\n"; // "Expected < but got >\n"
         log += diffRes;
-        ret.featureCount = 0;
+
+        const file1: string = textDecoderUtf8.decode(Deno_readFileSync(outFilename));
+        const file2: string = textDecoderUtf8.decode(Deno_readFileSync(outExpectedFilename));    
+        ret.featureCount = string_comp.getEditDistanceNormalized(file1, file2);
         ret.log = log;
         return ret;
     }
