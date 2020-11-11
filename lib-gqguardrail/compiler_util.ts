@@ -94,15 +94,15 @@ export const compileStrippingModuleSyntax = async (
         console.log("===============================================");
         for (let diag of diagnostics ? diagnostics : []) {
             let msg = "";
-            msg += diag.message;
+            msg += diag.messageText;
             msg += "\n";
-            msg += "See line " + (diag.lineNumber ? diag.lineNumber + 1 : 0) +
-                " maybe between columns " + (diag.startColumn
-                    ? diag.startColumn + 1
-                    : 0) +
-                " and " + (diag.endColumn ? diag.endColumn + 1 : 0);
+            msg += "See line " + (diag.start?.line ? diag.start.line + 1 : 0) +
+                " from column " + (diag.start?.character ? diag.start.character + 1 : 0) +
+                " to line " + (diag.end?.line ? diag.end.line + 1 : 0) +
+                " column " + (diag.end?.character ? diag.end.character + 1 : 0) +
+                ".";
             msg += "\n";
-            msg += "In file: " + diag.scriptResourceName;
+            msg += "In file: " + diag.fileName;
             msg += "\n";
             msg += "Context: " + diag.sourceLine;
             msg += "\n";
