@@ -10,6 +10,7 @@ const forceUpdateOnce = () => {
     const textEncoder = new TextEncoder();
     const textDecoder = new TextDecoder();
     const shScriptName = "compile_myprogram_bash.sh";
+    const batScriptName = "compile_myprogram_windows.bat";
     const updatedFlagFilePath = "libs/update1.txt";
     const updateFlatFileContent = "update flag: updated1";
     const reloadFlag = "--reload ";
@@ -19,8 +20,11 @@ const forceUpdateOnce = () => {
 
         let shScript = textDecoder.decode(Deno.readFileSync(shScriptName));
         shScript = shScript.replace(reloadFlag, "");
-        //console.log(shScript);
         Deno.writeFileSync(shScriptName, textEncoder.encode(shScript));
+
+        let batScript = textDecoder.decode(Deno.readFileSync(batScriptName));
+        batScript = batScript.replace(reloadFlag, "");
+        Deno.writeFileSync(batScriptName, textEncoder.encode(batScript));
     } catch (c) {
         try { // if not updated:
             let shScript = textDecoder.decode(Deno.readFileSync(shScriptName));
@@ -28,6 +32,11 @@ const forceUpdateOnce = () => {
             shScript = shScript.substring(0, shScriptIdx) + reloadFlag + shScript.substring(shScriptIdx);
             Deno.writeFileSync(shScriptName, textEncoder.encode(shScript));
             
+            let batScript = textDecoder.decode(Deno.readFileSync(batScriptName));
+            const batScriptIdx = batScript.indexOf("--allow-read");
+            batScript = batScript.substring(0, batScriptIdx) + reloadFlag + batScript.substring(batScriptIdx);
+            Deno.writeFileSync(batScriptName, textEncoder.encode(batScript));
+
             // insert updated marker
             Deno.writeFileSync(updatedFlagFilePath, textEncoder.encode(updateFlatFileContent));
         } catch (c) {
