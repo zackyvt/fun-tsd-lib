@@ -27,14 +27,16 @@ const forceUpdateOnce = () => {
         Deno.writeFileSync(batScriptName, textEncoder.encode(batScript));
     } catch (c) {
         try { // if not updated:
+            const runCmd = " run ";
+
             let shScript = textDecoder.decode(Deno.readFileSync(shScriptName));
-            const shScriptIdx = shScript.indexOf("--allow-read");
-            shScript = shScript.substring(0, shScriptIdx) + reloadFlag + shScript.substring(shScriptIdx);
+            const shScriptCutIdx = shScript.indexOf(runCmd) + runCmd.length;
+            shScript = shScript.substring(0, shScriptCutIdx) + reloadFlag + shScript.substring(shScriptCutIdx);
             Deno.writeFileSync(shScriptName, textEncoder.encode(shScript));
-            
+
             let batScript = textDecoder.decode(Deno.readFileSync(batScriptName));
-            const batScriptIdx = batScript.indexOf("--allow-read");
-            batScript = batScript.substring(0, batScriptIdx) + reloadFlag + batScript.substring(batScriptIdx);
+            const batScriptCutIdx = batScript.indexOf(runCmd) + runCmd.length;
+            batScript = batScript.substring(0, batScriptCutIdx) + reloadFlag + batScript.substring(batScriptCutIdx);
             Deno.writeFileSync(batScriptName, textEncoder.encode(batScript));
 
             // insert updated marker
