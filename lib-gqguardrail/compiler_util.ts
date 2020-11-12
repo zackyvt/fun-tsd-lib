@@ -107,24 +107,22 @@ export const compileStrippingModuleSyntax = async (
         console.log("===============================================");
         for (let diag of diagnostics ? diagnostics : []) {
             let msg = "";
-            msg += diag.messageText;
-            msg += "\n";
-            msg += "See line " + (diag.start?.line ? diag.start.line + 1 : 0) +
+            msg += Deno.formatDiagnostics([diag]);
+            msg += "\n\n";
+            msg += "    see line " + (diag.start?.line ? diag.start.line + 1 : 0) +
                 " from column " + (diag.start?.character ? diag.start.character + 1 : 0) +
                 " to line " + (diag.end?.line ? diag.end.line + 1 : 0) +
                 " column " + (diag.end?.character ? diag.end.character + 1 : 0) +
                 ".";
             msg += "\n";
-            msg += "In file: " + diag.fileName;
+            msg += "    in file: " + diag.fileName;
             msg += "\n";
-            msg += "Context: " + diag.sourceLine;
-            msg += "\n";
-            msg += ("-------------------");
+            msg += ("\n-------------------\n");
             console.log(msg);
         }
 
         console.log(
-            "\nBuilding despite warnings and errors.  You've been warned..."
+            "Building despite warnings and errors.  You've been warned..."
         );
     }
     for (let path in emitMap) {
