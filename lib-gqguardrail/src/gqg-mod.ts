@@ -380,8 +380,10 @@ export const createSpriteInGroup: CreateSpriteInGroupFn = function (
         }
 
         if (arguments.length === 5 || arguments.length === 7) {
-            if (typeof (theAnimation) !== "object" || ("imageUrl" in theAnimation && typeof (theAnimation["imageURL"]) !== "string")) {
-                throwConsoleErrorInMyprogram("createSpriteInGroup cannot use this as an animation: " + theAnimation);
+            if (typeof (theAnimation) !== "object" || (theAnimation instanceof Object
+                && (!("imageURL" in theAnimation) || typeof (theAnimation["imageURL"]) !== "string"))) {
+                throwConsoleErrorInMyprogram("createSpriteInGroup cannot use this as an animation: " + theAnimation
+                    + "\nAnimation must be of type SpriteAnimation but you provided a: " + typeof (theAnimation));
             }
             throwIfNotFiniteNumber("Width argument for createSpriteInGroup must be numeric. ", theWidth);
             throwIfNotFiniteNumber("Height argument for createSpriteInGroup must be numeric. ", theHeight);
@@ -394,7 +396,7 @@ export const createSpriteInGroup: CreateSpriteInGroupFn = function (
         } else if (arguments.length === 3) {
             if (typeof arguments[2] !== "object") {
                 throwConsoleErrorInMyprogram("Third argument for createSpriteInGroup expected to be a dictionary. Instead found: " + arguments[2]);
-            } else if ("imageUrl" in theAnimation && typeof (theAnimation["imageURL"]) === "string") {
+            } else if (theAnimation instanceof Object && (!("imageURL" in theAnimation) || typeof (theAnimation["imageURL"]) !== "string")) {
                 throwConsoleErrorInMyprogram("Third argument for createSpriteInGroup expected to be a dictionary. Instead found this animation: " + theAnimation + ". Maybe wrong number of arguments provided? Check API documentation for details of parameters.");
             } // else hope it's a proper standard options map
         } else {
