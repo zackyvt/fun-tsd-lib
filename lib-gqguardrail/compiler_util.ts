@@ -54,6 +54,7 @@ export const main = async () => {
         sourceMap: false,
         inlineSourceMap: true,
         inlineSources: true,
+        removeComments: false,
         outDir: "build" // only works if compilation src doesn't import Deno libs
     };
 
