@@ -110,7 +110,14 @@ export const compileStrippingModuleSyntax = async (
         console.log("===============================================");
         for (let diag of diagnostics ? diagnostics : []) {
             let msg = "";
-            msg += Deno.formatDiagnostics([diag]);
+            const importsNotUsedAsValues = (diag.category === 1 && diag.code === 1371);
+            if (importsNotUsedAsValues) {
+                msg += "TS1371 [MESSAGE]: This import is never used as a value and should use 'import type' because the 'importsNotUsedAsValues' is set to 'error'.";
+                msg += "\n    ";
+                msg += diag.sourceLine;
+            } else {
+                msg += Deno.formatDiagnostics([diag]);
+            }
             msg += "\n\n";
             msg += "    see line " + (diag.start?.line ? diag.start.line + 1 : 0) +
                 " from column " + (diag.start?.character ? diag.start.character + 1 : 0) +
@@ -119,6 +126,10 @@ export const compileStrippingModuleSyntax = async (
                 ".";
             msg += "\n";
             msg += "    in file: " + diag.fileName;
+            if (importsNotUsedAsValues) {
+                msg += "\n\n    ";
+                msg += "That's okay.  Continuing compiling...";
+            }
             msg += "\n";
             msg += ("\n-------------------\n");
             console.log(msg);
