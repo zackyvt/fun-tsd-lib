@@ -330,7 +330,7 @@ type CreateSpriteInGroupFn = {
         this: void,
         groupName: string,
         spriteName: string,
-        theAnimation: SpriteAnimation | string | number | boolean | object, // hack to allow student SpriteDict to contain arbitrary keys with value that's any of these; theAnimation must be SpriteAnimation, will be checked at run time
+        theAnimation: SpriteAnimation,
         theWidth: number,
         theHeight: number,
         thePosx: number,
@@ -340,7 +340,7 @@ type CreateSpriteInGroupFn = {
         this: void,
         groupName: string,
         spriteName: string,
-        theAnimation: SpriteAnimation | string | number | boolean | object,
+        theAnimation: SpriteAnimation,
         theWidth: number,
         theHeight: number
     ): void;
@@ -355,7 +355,7 @@ export const createSpriteInGroup: CreateSpriteInGroupFn = function (
     this: void,
     groupName: string,
     spriteName: string,
-    theAnimation: SpriteAnimation | string | number | boolean | object,
+    theAnimation: SpriteAnimation | object,
     theWidth?: number,
     theHeight?: number,
     thePosx?: number,
@@ -380,10 +380,8 @@ export const createSpriteInGroup: CreateSpriteInGroupFn = function (
         }
 
         if (arguments.length === 5 || arguments.length === 7) {
-            if (typeof (theAnimation) !== "object" || (theAnimation instanceof Object
-                && (!("imageURL" in theAnimation) || typeof (theAnimation["imageURL"]) !== "string"))) {
-                throwConsoleErrorInMyprogram("createSpriteInGroup cannot use this as an animation: " + theAnimation
-                    + "\nAnimation must be of type SpriteAnimation but you provided a: " + typeof (theAnimation));
+            if (typeof (theAnimation) !== "object" || ("imageUrl" in theAnimation && typeof (theAnimation["imageURL"]) !== "string")) {
+                throwConsoleErrorInMyprogram("createSpriteInGroup cannot use this as an animation: " + theAnimation);
             }
             throwIfNotFiniteNumber("Width argument for createSpriteInGroup must be numeric. ", theWidth);
             throwIfNotFiniteNumber("Height argument for createSpriteInGroup must be numeric. ", theHeight);
@@ -396,7 +394,7 @@ export const createSpriteInGroup: CreateSpriteInGroupFn = function (
         } else if (arguments.length === 3) {
             if (typeof arguments[2] !== "object") {
                 throwConsoleErrorInMyprogram("Third argument for createSpriteInGroup expected to be a dictionary. Instead found: " + arguments[2]);
-            } else if (theAnimation instanceof Object && (!("imageURL" in theAnimation) || typeof (theAnimation["imageURL"]) !== "string")) {
+            } else if ("imageUrl" in theAnimation && typeof (theAnimation["imageURL"]) === "string") {
                 throwConsoleErrorInMyprogram("Third argument for createSpriteInGroup expected to be a dictionary. Instead found this animation: " + theAnimation + ". Maybe wrong number of arguments provided? Check API documentation for details of parameters.");
             } // else hope it's a proper standard options map
         } else {
@@ -928,7 +926,7 @@ export type SpritePhysicalDimensions = {
 };
 export type SpriteDict = SpritePhysicalDimensions & {
     "id": string;
-    [s: string]: string | number | boolean | SpriteAnimation | object;
+    [s: string]: any;
 };
 const spritesSpeedSamples: { [k: string]: { sampleSize: number, xSpeedSamples: number[], ySpeedSamples: number[], checked: boolean } } = {};
 const checkSpriteSpeedUsageCommonErrors = (spriteInfo: SpriteDict) => {
