@@ -13,30 +13,30 @@ const forceUpdateOnce = () => {
     const batScriptName = "compile_myprogram_windows.bat";
     const updatedFlagFilePath = "libs/update1.txt";
     const updateFlatFileContent = "update flag: updated1";
-    const reloadFlag = "--reload ";
+    const runCmd = "run          ";
+    const runReloadCmd = "run --reload ";
+    if (runCmd.length !== runReloadCmd.length) {
+        return; // Macs/Windows modifies sh/bat code as it runs...
+    }
 
-    try { // check for updated marker
+    try { // if updated marker exists
         let x = Deno.readFileSync(updatedFlagFilePath);
 
         let shScript = textDecoder.decode(Deno.readFileSync(shScriptName));
-        shScript = shScript.replace(reloadFlag, "");
+        shScript = shScript.replace(runReloadCmd, runCmd);
         Deno.writeFileSync(shScriptName, textEncoder.encode(shScript));
 
         let batScript = textDecoder.decode(Deno.readFileSync(batScriptName));
-        batScript = batScript.replace(reloadFlag, "");
+        batScript = batScript.replace(runReloadCmd, runCmd);
         Deno.writeFileSync(batScriptName, textEncoder.encode(batScript));
     } catch (c) {
         try { // if not updated:
-            const runCmd = " run ";
-
             let shScript = textDecoder.decode(Deno.readFileSync(shScriptName));
-            const shScriptCutIdx = shScript.indexOf(runCmd) + runCmd.length;
-            shScript = shScript.substring(0, shScriptCutIdx) + reloadFlag + shScript.substring(shScriptCutIdx);
+            shScript = shScript.replace(runCmd, runReloadCmd);
             Deno.writeFileSync(shScriptName, textEncoder.encode(shScript));
 
             let batScript = textDecoder.decode(Deno.readFileSync(batScriptName));
-            const batScriptCutIdx = batScript.indexOf(runCmd) + runCmd.length;
-            batScript = batScript.substring(0, batScriptCutIdx) + reloadFlag + batScript.substring(batScriptCutIdx);
+            batScript = batScript.replace(runCmd, runReloadCmd);
             Deno.writeFileSync(batScriptName, textEncoder.encode(batScript));
 
             // insert updated marker
