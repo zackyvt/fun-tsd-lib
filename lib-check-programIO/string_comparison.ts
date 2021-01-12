@@ -34,12 +34,227 @@ var addOneLoopGuard = function (code: string) {
     return { code: code, rest: restOfCodePt };
 }
 
+var idxOfMatchingQuote = function (code: string, openQuoteIdx: number) {
+    // return index of matching closing quote.  return code.length if not found.
+    // matches double quote if char at openQuoteIdx is ", else matches '
+    const quoteChar = code.charAt(openQuoteIdx);
+    if (quoteChar !== '"' && quoteChar !== "'") {
+        return code.length;
+    }
+    for (let idx = openQuoteIdx + 1; idx < code.length; ++idx) {
+        let ch = code.charAt(idx);
+        if (ch === '\\') {
+            ++idx;
+            continue;
+        } else if (ch === quoteChar) {
+            return idx;
+        }
+    }
+    return code.length;
+}
+
+var idxOfMatchingCloseParen = function (code: string, openParenIdx: number) { // return -1 if no matching ) found
+    let parenLevel = 1;
+    const codeLen = code.length;
+    for (let idx = openParenIdx + 1; idx < codeLen; ++idx) {
+        let ch = code.charAt(idx);
+
+        if (ch.trim() === '') {
+            continue;
+        }
+
+        if (ch === '/' && idx + 1 < codeLen) {
+            const chP1 = code.charAt(idx + 1);
+            if (chP1 === '/') {
+                idx = code.indexOf('\n', idx + 2);
+                continue;
+            } else if (chP1 === '*') {
+                idx = code.indexOf('*/', idx + 2) + 1;
+                continue;
+            }
+        }
+
+        if (ch === '"' || ch === "'") {
+            idx = idxOfMatchingQuote(code, idx);
+            continue;
+        }
+
+        if (ch === ')') {
+            --parenLevel;
+            if (parenLevel === 0) {
+                return idx;
+            }
+        } else if (ch === '(') {
+            ++parenLevel;
+            continue;
+        }
+    }
+    return -1;
+}
+
+var idxOfLoopBodyStart = function (code: string, startIdx: number) {
+    // start search at startIdx
+    // return idx of loop body open brace
+    // else if loop body is single statement, return index of character before that statement starts
+    // return -1 if not found
+
+    const codeLen = code.length;
+    for (let idx = startIdx; idx < codeLen; ++idx) {
+        let ch = code.charAt(idx);
+
+        if (ch.trim() === '') {
+            continue;
+        }
+
+        if (ch === '/' && idx + 1 < codeLen) {
+            const chP1 = code.charAt(idx + 1);
+            if (chP1 === '/') {
+                idx = code.indexOf('\n', idx + 2);
+                continue;
+            } else if (chP1 === '*') {
+                idx = code.indexOf('*/', idx + 2) + 1;
+                continue;
+            }
+        }
+
+        if (ch === '{') {
+            return idx;
+        } else if (ch.trim() !== '') {
+            return idx - 1;
+        }
+    }
+    return -1;
+}
+
+var matchLoopHeaderTo1stParen = function (code: string) {
+    // return {index: idx of header, length: length of header, match: matched header}
+    // header is either /((while|for)\s*\()/
+    // if not found: idx and length are -1, match is null
+    // this will skip over single / multi line comments
+    const loopHeaderRE = /^((while|for)\s*\()/;
+    const codeLen = code.length;
+    for (let idx = 0; idx < codeLen; ++idx) {
+        let ch = code.charAt(idx);
+
+        if (ch.trim() === '') {
+            continue;
+        }
+
+        if (ch === '/' && idx + 1 < codeLen) {
+            const chP1 = code.charAt(idx + 1);
+            if (chP1 === '/') {
+                idx = code.indexOf('\n', idx + 2);
+                continue;
+            } else if (chP1 === '*') {
+                idx = code.indexOf('*/', idx + 2) + 1;
+                continue;
+            }
+        }
+
+        if (ch === '"' || ch === "'") {
+            idx = idxOfMatchingQuote(code, idx);
+            continue;
+        }
+
+        const restOfCode = code.substring(idx);
+        const codeMat = restOfCode.match(loopHeaderRE);
+        if (codeMat !== null) {
+            return { match: codeMat[0], length: codeMat[0].length, index: idx };
+        }
+    }
+
+    return { match: null, length: -1, index: -1 };
+}
+
+var idxOfStatementEnd = function (code: string, startIdx: number) {
+    // start search at startIdx
+    // return idx of end of statement (index of first ; or \n found)
+    // precond: here we assume a single statement must not spread over multiple lines, and is thus ; or \n terminated.
+    // if precond is violated, we'll do our best to return a usuable index...
+    // WONTFIX: single statement spread over multiple lines is assumed to be a (stylistic) error
+    const codeLen = code.length;
+    for (let idx = startIdx; idx < codeLen; ++idx) {
+        let ch = code.charAt(idx);
+
+        if (ch === '/' && idx + 1 < codeLen) {
+            const chP1 = code.charAt(idx + 1);
+            if (chP1 === '/') {
+                idx = code.indexOf('\n', idx + 2);
+                continue;
+            } else if (chP1 === '*') {
+                idx = code.indexOf('*/', idx + 2) + 1;
+                continue;
+            }
+        }
+
+        if (ch === '"' || ch === "'") {
+            idx = idxOfMatchingQuote(code, idx);
+            continue;
+        }
+
+        if (ch === '(') {
+            const closeParenIdx = idxOfMatchingCloseParen(code, idx);
+            if (closeParenIdx >= 0) {
+                idx = closeParenIdx;
+            }
+            continue;
+        }
+
+        if (ch === ';' || ch === '\n') {
+            return idx;
+        }
+    }
+    return code.length;
+}
+
+var _Some_Random_Var_Count = 0;
+var addOneLoopGuardBySemiParsing = function (code: string): { code: string, rest: number } {
+    const noopRet = { code: code, rest: code.length };
+
+    const match = matchLoopHeaderTo1stParen(code);
+    if (match.index < 0) {
+        return noopRet
+    }
+
+    const closeParenIdx = idxOfMatchingCloseParen(code, match.index + match.length - 1);
+    if (closeParenIdx < 0) {
+        return noopRet;
+    }
+
+    const idxOfBody = idxOfLoopBodyStart(code, closeParenIdx + 1);
+    if (idxOfBody >= 0 && code.charAt(idxOfBody) !== '{') {
+        code = code.substring(0, idxOfBody + 1) + "{" + code.substring(idxOfBody + 1);
+        const stmtEndIdx = idxOfStatementEnd(code, idxOfBody + 1);
+        code = code.substring(0, stmtEndIdx + 1) + "}" + code.substring(stmtEndIdx + 1);
+        return addOneLoopGuardBySemiParsing(code);
+    }
+
+    const newCodeIdx = 1 + (idxOfBody < 0 ? code.length : idxOfBody);
+
+    //	print(code.substring(0,codeNewLinePt));
+
+    ++_Some_Random_Var_Count;
+    var newVar = "_Some_Random_Var_" + _Some_Random_Var_Count + "_" + Math.floor(Math.random() * 1000);
+    var preLoop = "var " + newVar + " = 0;\n";
+    var inLoop = newVar + "++;     ";
+    inLoop += "if (" + newVar + "> 1000) break;     ";
+
+    code = code.substring(0, newCodeIdx) + inLoop + code.substring(newCodeIdx);
+    code = code.substring(0, match.index) + preLoop + code.substring(match.index);
+    //code = code.replace(/((while|for)\s*\([^)]*\))/, preLoop + "$1");
+
+    var inLoopPt = code.indexOf(inLoop);
+    var restOfCodePt = inLoopPt + inLoop.length;
+
+    return { code: code, rest: restOfCodePt };
+}
+
 var addLoopGuard = function (code: string) {
     var tempCode = code;
     var finalCode = "";
     var restPt = 0;
     while (tempCode.length > 0) {
-        var guarded = addOneLoopGuard(tempCode);
+        var guarded = addOneLoopGuardBySemiParsing(tempCode);
         restPt = guarded["rest"]
         finalCode += guarded["code"].substring(0, restPt);
         tempCode = guarded["code"].substring(restPt);
