@@ -1,22 +1,21 @@
 "use strict";
 
-var addLoopGuard = function (code: any) {
+var addLoopGuard = function (code: string) {
     var codeMat = code.match(/((while|for)\s*\([^)]*\))/);
     var codePt = code.search(/((while|for)\s*\([^)]*\))/);
-    if (codePt < 0) {
+    if (codePt < 0 || codeMat == null) {
         return { code: code, rest: code.length };
     }
 
     var openingBracePtDelta = code.substring(codePt + codeMat[0].length).match(/\W*/);
     var openingBracePtDelta2 = code.substring(codePt + codeMat[0].length).match(/[^a-zA-Z0-9_{]*/);
-    if (openingBracePtDelta2 && openingBracePtDelta
+    let openingBracePtDeltaNum: number = 0;
+    if (openingBracePtDelta2 != null && openingBracePtDelta != null
         && openingBracePtDelta2[0].length < openingBracePtDelta[0].length) {
-        openingBracePtDelta = code.substring(codePt + codeMat[0].length).indexOf("{");
-    } else {
-        openingBracePtDelta = 0;
+        openingBracePtDeltaNum = code.substring(codePt + codeMat[0].length).indexOf("{");
     }
 
-    var codeNewLinePt = codePt + codeMat[0].length + openingBracePtDelta + 1;
+    var codeNewLinePt = codePt + codeMat[0].length + openingBracePtDeltaNum + 1;
 
     //	print(code.substring(0,codeNewLinePt));
 
