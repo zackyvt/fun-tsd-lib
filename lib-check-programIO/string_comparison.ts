@@ -1,6 +1,6 @@
 "use strict";
 
-var addLoopGuard = function (code: string) {
+var addOneLoopGuard = function (code: string) {
     var codeMat = code.match(/((while|for)\s*\([^)]*\))/);
     var codePt = code.search(/((while|for)\s*\([^)]*\))/);
     if (codePt < 0 || codeMat == null) {
@@ -34,6 +34,19 @@ var addLoopGuard = function (code: string) {
     return { code: code, rest: restOfCodePt };
 }
 
+var addLoopGuard = function (code: string) {
+    var tempCode = code;
+    var finalCode = "";
+    var restPt = 0;
+    while (tempCode.length > 0) {
+        var guarded = addOneLoopGuard(tempCode);
+        restPt = guarded["rest"]
+        finalCode += guarded["code"].substring(0, restPt);
+        tempCode = guarded["code"].substring(restPt);
+    }
+    return finalCode;
+}
+
 export var scrubCode = function (code: string): string {
     //code = code.replace(/quit\s*\([^)]*\)/g, "\n/*quit()*/\n"); // get rid of quit()s
     code = code.replace(/Fun.javaSleep\s*\(\s*\d+\s*[^)]*\)/g, "\n/*Fun javaSleep(...)*/\n"); // get rid of javaSleep(...)s
@@ -42,16 +55,7 @@ export var scrubCode = function (code: string): string {
     code = code.replace(/threadSleep\s*\(\s*\d+\s*[^)]*\)/g, "\n/*threadSleep(...)*/\n"); // get rid of javaSleep(...)s
     //code = code.replace(/java\.lang\.Thread\.sleep\s*\(\s*\d+\s*[^)]*\)/g, "\n/*java.lang.Thread.sleep(...)*/\n"); // get rid of java.lang.Thread.sleep(...)s
 
-    var tempCode = code;
-    var finalCode = "";
-    var restPt = 0;
-    while (tempCode.length > 0) {
-        var guarded = addLoopGuard(tempCode);
-        restPt = guarded["rest"]
-        finalCode += guarded["code"].substring(0, restPt);
-        tempCode = guarded["code"].substring(restPt);
-    }
-    code = finalCode;
+    code = addLoopGuard(code);
 
     //	g = addWhileGuard(code);
     //	code = addWhileGuard(code)["code"]
