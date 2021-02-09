@@ -273,8 +273,54 @@ export const bgcolor216code = function(r: number, g: number, b: number) { // r,g
   return "\u001B[48;5;" + (16 + 36 * r + 6 * g + b) + "m";
 };
 
+export const colorRgbCode = function(r: number, g: number, b: number) { // r,g,b ranges from 0 to 255
+  if (r < 0) {
+    r = 0;
+  }
+  if (g < 0) {
+    g = 0;
+  }
+  if (b < 0) {
+    b = 0;
+  }
+  if (r > 255) {
+    r = 255;
+  }
+  if (g > 255) {
+    g = 255;
+  }
+  if (b > 255) {
+    b = 255;
+  }
+  return "\u001B[38;2;" + r + ";" + g + ";" + b + "m";
+};
+
+export const bgcolorRgbCode = function(r: number, g: number, b: number) { // r,g,b ranges from 0 to 255
+  if (r < 0) {
+    r = 0;
+  }
+  if (g < 0) {
+    g = 0;
+  }
+  if (b < 0) {
+    b = 0;
+  }
+  if (r > 255) {
+    r = 255;
+  }
+  if (g > 255) {
+    g = 255;
+  }
+  if (b > 255) {
+    b = 255;
+  }
+  return "\u001B[48;2;" + r + ";" + g + ";" + b + "m";
+};
+
+
 // Example usage:
 // print(ANSI_RED + "Hi\n" + ANSI_GREEN + "What's your" + ANSI_BLUE + " name?");
 // print(ANSI_RESET);
 // print(bgcolor216code(5,5,5) + color216code(5, 0, 0) + "RED");
 // print(ANSI_RESET);
+// print(colorRgbCode(255,0,0) + bgcolorRgbCode(0,0,255) + "Red on Blue");
