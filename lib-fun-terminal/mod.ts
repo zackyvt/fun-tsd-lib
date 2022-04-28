@@ -334,6 +334,7 @@ export const bgcolorRgbCode = function(r: number, g: number, b: number) { // r,g
 // see: https://docs.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences
 
 export const ANSI_CLEARSCREEN = "\u001B[2J";
+export const ANSI_CLEARLINE = "\u001B[2K";
 
 export const setCursorPos = function (row: number, col: number) {
     // row, col must be non-negative (some console starts at 0, some at 1 though)
