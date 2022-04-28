@@ -74,6 +74,7 @@ export const getCursorPos = function (): { row: number, col: number } {
 //             print(letter.charCodeAt(0));
 //             break;
 //     }
+//     return false;
 // };
 
 export type stringProc = (s: string) => boolean;
@@ -227,12 +228,12 @@ export const whenKeypressTimedAsync = async function (process: stringProc, mseco
 export const getInputTimed = function (msecondsTotal: number): string {
     // for msecondsTotal, if <= 0, then no limit
     // sync will NOT early terminate upon reaching TimeLimited --- msecondsTotal --- but only after user input after TimeLimited reached
-    return whenKeypressTimedMaybeSync(true, (s: string) => { }, msecondsTotal, -1, 1) as string;
+    return whenKeypressTimedMaybeSync(true, (s: string) => { return false; }, msecondsTotal, -1, 1) as string;
 };
 
 export const getInputTimedAsync = async function (msecondsTotal: number): Promise<string> {
     // for msecondsTotal, if <= 0, then no limit
     // async WILL early terminate upon reaching TimeLimited: msecondsTotal
     // requires bash, as this will use readInputTimedAsync
-    return whenKeypressTimedMaybeSync(false, (s: string) => { }, msecondsTotal, -1, 1) as string;
+    return whenKeypressTimedMaybeSync(false, (s: string) => { return false; }, msecondsTotal, -1, 1) as string;
 };
