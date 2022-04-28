@@ -59,7 +59,7 @@ export const getCursorPos = function (): { row: number, col: number } {
 // Many in this family of functions depend on a user supplied string processing function.
 // An example is:
 //
-// const exampleProcessFunction: stringProc = function (letter: string) {
+// const exampleProcessFunction: StringProc = function (letter: string) {
 //     switch (letter) {
 //         case "a":
 //             print("aaa");
@@ -77,8 +77,8 @@ export const getCursorPos = function (): { row: number, col: number } {
 //     return false;
 // };
 
-export type stringProc = (s: string) => boolean;
-export const whenKeypressTimedMaybeSync = function (isSync: boolean, process: stringProc, msecondsTotal: number, msecondsPerKey: number, charCountPerKey: number = 1): string | Promise<string> {
+export type StringProc = (s: string) => boolean;
+export const whenKeypressTimedMaybeSync = function (isSync: boolean, process: StringProc, msecondsTotal: number, msecondsPerKey: number, charCountPerKey: number = 1): string | Promise<string> {
     // sync will NOT early terminate upon reaching TimeLimited --- msecondsTotal or msecondsPerKey --- but only after user input after TimeLimited reached
     // async WILL early terminate upon reaching TimeLimited: msecondsTotal or msecondsPerKey
     const sync = isSync;
@@ -208,17 +208,17 @@ export const readInputTimedAsync = async function (msec: number, echo: boolean =
 };
 
 
-export const whenKeypress = function (process: stringProc): string {
+export const whenKeypress = function (process: StringProc): string {
     return whenKeypressTimedMaybeSync(true, process, -1, -1, 1) as string;
 };
 
-export const whenKeypressTimed = function (process: stringProc, msecondsTotal: number, msecondsPerKey: number): string {
+export const whenKeypressTimed = function (process: StringProc, msecondsTotal: number, msecondsPerKey: number): string {
     // for msecondsTotal and msecondsPerKey, if <= 0, then no limit
     // sync will NOT early terminate upon reaching TimeLimited --- msecondsTotal or msecondsPerKey --- but only after user input after TimeLimited reached
     return whenKeypressTimedMaybeSync(true, process, msecondsTotal, msecondsPerKey, 1) as string;
 };
 
-export const whenKeypressTimedAsync = async function (process: stringProc, msecondsTotal: number, msecondsPerKey: number): Promise<string> {
+export const whenKeypressTimedAsync = async function (process: StringProc, msecondsTotal: number, msecondsPerKey: number): Promise<string> {
     // for msecondsTotal and msecondsPerKey, if <= 0, then no limit
     // async WILL early terminate upon reaching TimeLimited: msecondsTotal or msecondsPerKey
     // requires bash, as this will use readInputTimedAsync
