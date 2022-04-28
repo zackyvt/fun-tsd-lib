@@ -76,7 +76,7 @@ export const getCursorPos = function (): { row: number, col: number } {
 //     }
 // };
 
-export type stringProc = (s: string) => void;
+export type stringProc = (s: string) => boolean;
 export const whenKeypressTimedMaybeSync = function (isSync: boolean, process: stringProc, msecondsTotal: number, msecondsPerKey: number, charCountPerKey: number = 1): string | Promise<string> {
     // sync will NOT early terminate upon reaching TimeLimited --- msecondsTotal or msecondsPerKey --- but only after user input after TimeLimited reached
     // async WILL early terminate upon reaching TimeLimited: msecondsTotal or msecondsPerKey
@@ -142,8 +142,11 @@ export const whenKeypressTimedMaybeSync = function (isSync: boolean, process: st
                         break;
 
                     default:
-                        processFn(char);
+                        let ret = processFn(char);
                         inputAccum += char;
+                        if (ret){
+                            return { result: inputAccum, done: true };
+                        }
                         break;
                 }
             }
