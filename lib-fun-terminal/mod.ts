@@ -324,3 +324,35 @@ export const bgcolorRgbCode = function(r: number, g: number, b: number) { // r,g
 // print(bgcolor216code(5,5,5) + color216code(5, 0, 0) + "RED");
 // print(ANSI_RESET);
 // print(colorRgbCode(255,0,0) + bgcolorRgbCode(0,0,255) + "Red on Blue");
+
+
+// ***********************************************************************
+// ***********************************************************************
+//             Advanced Console Cursor Manipulation
+// ***********************************************************************
+// ***********************************************************************
+// see: https://docs.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences
+
+export const ANSI_CLEARSCREEN = "\u001B[2J";
+
+export const setCursorPos = function (row: number, col: number) {
+    // row, col must be non-negative (some console starts at 0, some at 1 though)
+    if (row >= 0 && col >= 0) {
+        pr("\u001B[" + row + ";" + col + "H");
+    }
+};
+
+export const moveCursor = function (rowDelta: number, colDelta: number) {
+    if (rowDelta > 0) {
+        pr("\u001B[" + rowDelta + "B"); // down
+    }
+    if (rowDelta < 0) {
+        pr("\u001B[" + (-rowDelta) + "A"); // up
+    }
+    if (colDelta > 0) {
+        pr("\u001B[" + colDelta + "C"); // right
+    }
+    if (colDelta < 0) {
+        pr("\u001B[" + (-colDelta) + "D"); // left
+    }
+};
