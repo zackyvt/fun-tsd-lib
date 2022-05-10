@@ -801,6 +801,7 @@ export const spriteScale = (spriteName: string, ratio: number): void => {
         throwIfSpriteNameInvalid(spriteName);
         throwIfNotFiniteNumber("Ratio must be a number.", ratio);
     }
+    $("#" + spriteName).css("transform-origin", "top left");
     $("#" + spriteName).scale(ratio);
 };
 
