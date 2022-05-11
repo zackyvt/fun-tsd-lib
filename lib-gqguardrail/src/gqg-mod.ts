@@ -855,6 +855,34 @@ export const spriteResumeAnimation = (spriteName: string): void => {
     $("#" + spriteName).resumeAnimation();
 };
 
+type JQObject = {
+    offset: () => {left: number, top: number};
+    outerWidth: (x: boolean) => number;
+    outerHeight: (x: boolean) => number;
+};
+const jqDivsHit = function (div1: JQObject, div2: JQObject) { // axis aligned, div1/2 are jQuery objects
+    const d1Left = div1.offset().left;
+    const d1Right = d1Left + div1.outerWidth(true);
+    const d1Top = div1.offset().top;
+    const d1Bottom = d1Top + div1.outerHeight(true);
+
+    const d2Left = div2.offset().left;
+    const d2Right = d2Left + div2.outerWidth(true);
+    const d2Top = div2.offset().top;
+    const d2Bottom = d2Top + div2.outerHeight(true);
+
+    return !(d1Bottom < d2Top || d1Top > d2Bottom || d1Right < d2Left || d1Left > d2Right);
+};
+
+type DOMObject = {
+    getBoundingClientRect: () => {left: number, top: number, right: number, bottom: number};
+};
+const divsHit = function (div1: DOMObject, div2: DOMObject) { // axis aligned, div1/2 are DOM objects
+    const r1 = div1.getBoundingClientRect();
+    const r2 = div2.getBoundingClientRect();
+    return !(r1.bottom < r2.top || r1.top > r2.bottom || r1.right < r2.left || r1.left > r2.right);
+};
+
 export type CollisionHandlingFn = (collIndex: number, hitSprite: object) =>
     void;
 export const forEachSpriteSpriteCollisionDo = (
@@ -862,9 +890,10 @@ export const forEachSpriteSpriteCollisionDo = (
     sprite2Name: string,
     collisionHandlingFunction: CollisionHandlingFn
 ): void => {
-    $("#" + sprite1Name).collision(".gQ_group, #" + sprite2Name).each(
-        collisionHandlingFunction
-    );
+    const s1 = $("#" + sprite1Name);
+    s1.collision(".gQ_group, #" + sprite2Name).filter(function (x: number, s2: DOMObject) {
+        return divsHit(s1[0], s2);
+    }).each(collisionHandlingFunction);
     // collisionHandlingFunction can optionally take two arguments: collIndex, hitSprite
     // see http://api.jquery.com/jQuery.each
 };
@@ -885,9 +914,10 @@ export const forEachSpriteGroupCollisionDo = (
     groupName: string,
     collisionHandlingFunction: CollisionHandlingFn
 ): void => {
-    $("#" + sprite1Name).collision("#" + groupName + ", .gQ_sprite").each(
-        collisionHandlingFunction
-    );
+    const s1 = $("#" + sprite1Name);
+    s1.collision("#" + groupName + ", .gQ_sprite").filter(function (x: number, s2: DOMObject) {
+        return divsHit(s1[0], s2);
+    }).each(collisionHandlingFunction);
     // collisionHandlingFunction can optionally take two arguments: collIndex, hitSprite
     // see http://api.jquery.com/jQuery.each
 };
@@ -898,7 +928,10 @@ export const forEachSpriteFilteredCollisionDo = (
     filterStr: string,
     collisionHandlingFunction: CollisionHandlingFn
 ): void => {
-    $("#" + sprite1Name).collision(filterStr).each(collisionHandlingFunction);
+    const s1 = $("#" + sprite1Name);
+    s1.collision(filterStr).filter(function (x: number, s2: DOMObject) {
+        return divsHit(s1[0], s2);
+    }).each(collisionHandlingFunction);
     // see http://gamequeryjs.com/documentation/api/#collision for filterStr spec
     // collisionHandlingFunction can optionally take two arguments: collIndex, hitSprite
     // see http://api.jquery.com/jQuery.each
