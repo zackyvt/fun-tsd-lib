@@ -796,13 +796,42 @@ export const spriteRotate = (
     $("#" + spriteName).rotate(angleDegrees);
 };
 
+const GQG_SPRITES_PROPS: { [x: string]: { [y: string]: any } } = {};
 export const spriteScale = (spriteName: string, ratio: number): void => {
+    // Scales the sprite's width/height with ratio, 
+    // and set its anim to 100% fit it.
+    //
+    // NOTE: We assume that the width/height of the sprite 
+    // upon first call to this function is the "original" width/height of the sprite.
+    // This and all subsequent calls to this function calculates ratio
+    // relative to that original width/height.
+
     if (GQG_DEBUG) {
         throwIfSpriteNameInvalid(spriteName);
         throwIfNotFiniteNumber("Ratio must be a number.", ratio);
     }
+
+    let spriteProp = GQG_SPRITES_PROPS[spriteName];
+    if (spriteProp == null) {
+        spriteProp = {
+            widthOriginal: spriteGetWidth(spriteName),
+            heightOriginal: spriteGetHeight(spriteName)
+        };
+        GQG_SPRITES_PROPS[spriteName] = spriteProp;
+    }
+    const newWidth = spriteProp.widthOriginal * ratio;
+    const newHeight = spriteProp.heightOriginal * ratio;
+
+    //$("#" + spriteName).scale(ratio); // GQ scale is very broken.
+    // GQ's scale() will scale the anim image (which is a background-image in the div) properly
+    // and even scale the div's width/height properly
+    // but somehow the in-game width/height that GQ stores for it remains the original size
+    // and worse, the hit box's width/height that GQ uses to calculate collision detection with 
+    // is in between the div's and the sprite's width/height (about halfway between? don't know).
+
     $("#" + spriteName).css("transform-origin", "top left");
-    $("#" + spriteName).scale(ratio);
+    $("#" + spriteName).css("background-size", "100% 100%"); // stretches width/height independently to width/height of div
+    spriteSetWidthHeight(spriteName, newWidth, newHeight);
 };
 
 export const spriteSetAnimation = function (
