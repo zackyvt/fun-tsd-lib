@@ -829,7 +829,7 @@ export const spriteScale = (spriteName: string, ratio: number): void => {
     // and worse, the hit box's width/height that GQ uses to calculate collision detection with 
     // is in between the div's and the sprite's width/height (about halfway between? don't know).
 
-    $("#" + spriteName).css("transform-origin", "top left");
+    //$("#" + spriteName).css("transform-origin", "top left"); // do NOT change transform-origin, else breaks collision and rotate
     $("#" + spriteName).css("background-size", "100% 100%"); // stretches width/height independently to width/height of div
     spriteSetWidthHeight(spriteName, newWidth, newHeight);
 };
