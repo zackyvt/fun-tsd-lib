@@ -966,7 +966,8 @@ export const forEachSpriteFilteredCollisionDo = (
 export const forEachSpriteFilteredHit = forEachSpriteFilteredCollisionDo;
 
 const spriteFilteredCollision = function (sprite1Name: string, filter: string): DOMObject[] {
-    // Fixes GQ's collision function, because GQ's collide function is badly broken when sprites are rotated/scaled
+    // Based on and fixes GQ's collision function, because GQ's collide 
+    // function is badly broken when sprites are rotated/scaled
     // The fix is to check collision using axis aligned rectangular hit boxes.
     // Not great for rotated sprites, but good enough for now.
     const s1 = $("#" + sprite1Name);
