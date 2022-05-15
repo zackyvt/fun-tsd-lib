@@ -886,6 +886,39 @@ const domObjsCollideAxisAligned = function (obj1: DOMObject, obj2: DOMObject) {
     return !(r1.bottom < r2.top || r1.top > r2.bottom || r1.right < r2.left || r1.left > r2.right);
 };
 
+type GameQueryObject = {
+    angle: number,
+    animation: object,
+    boundingCircle: object,
+    currentFrame: number,
+    factor: number,
+    factorh: number,
+    factorv: number,
+    frameIncrement: number,
+    geometry: number,
+    height: number,
+    idleCounter: number,
+    playing: boolean,
+    posOffsetX: number,
+    posOffsetY: number,
+    posx: number,
+    posy: number,
+    posz: number,
+    width: number
+};
+const gqObjsCollideAxisAligned = function (obj1: { gameQuery: GameQueryObject }, obj2: { gameQuery: GameQueryObject }) {
+    // obj1/2 must be axis aligned GQ DOM objects
+    // turns out this is not really faster than domObjsCollideAxisAligned
+    const r1 = obj1.gameQuery;
+    const r1_bottom = r1.posy + r1.height;
+    const r1_right = r1.posx + r1.width;
+
+    const r2 = obj2.gameQuery;
+    const r2_bottom = r2.posy + r2.height;
+    const r2_right = r2.posx + r2.width;
+    return !(r1_bottom < r2.posy || r1.posy > r2_bottom || r1_right < r2.posx || r1.posx > r2_right);
+};
+
 export type CollisionHandlingFn = (collIndex: number, hitSprite: object) =>
     void;
 export const forEachSpriteSpriteCollisionDo = (
