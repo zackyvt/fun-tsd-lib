@@ -919,6 +919,62 @@ const gqObjsCollideAxisAligned = function (obj1: { gameQuery: GameQueryObject },
     return !(r1_bottom < r2.posy || r1.posy > r2_bottom || r1_right < r2.posx || r1.posx > r2_right);
 };
 
+
+/**
+ * Utility function returns radius of rectangular geometry
+ * 
+ * @param elem
+ * @param angle the angle in degrees
+ * @return .x, .y radius of geometry
+ */
+const projectGqObj = function (elem: GameQueryObject, angle: number): { x: number, y: number } {
+    // based on a GQ fn.
+    const b = angle * Math.PI / 180;
+    const Rx = Math.abs(Math.cos(b) * elem.width / 2 * elem.factor) + Math.abs(Math.sin(b) * elem.height / 2 * elem.factor);
+    const Ry = Math.abs(Math.cos(b) * elem.height / 2 * elem.factor) + Math.abs(Math.sin(b) * elem.width / 2 * elem.factor);
+    return { x: Rx, y: Ry };
+};
+
+/**
+ * Utility function returns whether two non-axis aligned rectangular objects are colliding
+ * 
+ * @param elem1
+ * @param elem1CenterX x-coord of center of bounding circle/rect of elem1
+ * @param elem1CenterY y-coord of center of bounding circle/rect of elem1
+ * @param elem2
+ * @param elem2CenterX x-coord of center of bounding circle/rect of elem2
+ * @param elem2CenterY y-coord of center of bounding circle/rect of elem2
+ * @return {boolean} if the two elements collide or not
+ */
+const gqObjsCollide = function (elem1: GameQueryObject, elem1CenterX: number, elem1CenterY: number,
+    elem2: GameQueryObject, elem2CenterX: number, elem2CenterY: number): boolean {
+    // test real collision (only for two rectangles; could be rotated)
+    // based on and fixes a broken GQ fn.
+    const dx = elem2CenterX - elem1CenterX; // GQ uses its boundingCircle to calculate these, but
+    const dy = elem2CenterY - elem1CenterY; // GQ boundingCircles are broken when sprites are scaled
+    const a = Math.atan(dy / dx);
+
+    let Dx = Math.abs(Math.cos(a - elem1.angle * Math.PI / 180) / Math.cos(a) * dx);
+    let Dy = Math.abs(Math.sin(a - elem1.angle * Math.PI / 180) / Math.sin(a) * dy);
+
+    let R = projectGqObj(elem2, elem2.angle - elem1.angle);
+
+    if ((elem1.width / 2 * elem1.factor + R.x <= Dx) || (elem1.height / 2 * elem1.factor + R.y <= Dy)) {
+        return false;
+    } else {
+        Dx = Math.abs(Math.cos(a - elem2.angle * Math.PI / 180) / Math.cos(a) * -dx);
+        Dy = Math.abs(Math.sin(a - elem2.angle * Math.PI / 180) / Math.sin(a) * -dy);
+
+        R = projectGqObj(elem1, elem1.angle - elem2.angle);
+
+        if ((elem2.width / 2 * elem2.factor + R.x <= Dx) || (elem2.height / 2 * elem2.factor + R.y <= Dy)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+};
+
 export type CollisionHandlingFn = (collIndex: number, hitSprite: object) =>
     void;
 export const forEachSpriteSpriteCollisionDo = (
@@ -1000,8 +1056,21 @@ const spriteFilteredCollision = function (sprite1Name: string, filter: string): 
                             //if (collide(gameQuery, { x: offsetX, y: offsetY }, elementToCheck.gameQuery, { x: elementsToCheck[i].offsetX, y: elementsToCheck[i].offsetY })) {
                             // GQ's collide is very broken if rotation applied
 
+                            if (s1[0].gameQuery.angle % 90 === 0 && elementToCheck.gameQuery.angle % 90 === 0) {
+                                // axis aligned collision
                                 // Add to the result list if collision detected
                                 resultList.push(elementsToCheck[i][subLen]);
+                            } else { // not axis aligned collision
+                                const s1CenterX = s1Rect.left + (s1Rect.right - s1Rect.left) / 2;
+                                const s1CenterY = s1Rect.top + (s1Rect.bottom - s1Rect.top) / 2;
+                                const e2CenterX = e2Rect.left + (e2Rect.right - e2Rect.left) / 2;
+                                const e2CenterY = e2Rect.top + (e2Rect.bottom - e2Rect.top) / 2;
+                                if (gqObjsCollide(s1[0].gameQuery, s1CenterX, s1CenterY,
+                                    elementToCheck.gameQuery, e2CenterX, e2CenterY)) {
+                                    // Add to the result list if collision detected
+                                    resultList.push(elementsToCheck[i][subLen]);
+                                }
+                            }
                         }
                     }
                 }
