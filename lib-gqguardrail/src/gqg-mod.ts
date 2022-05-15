@@ -860,16 +860,17 @@ type JQObject = {
     outerWidth: (x: boolean) => number;
     outerHeight: (x: boolean) => number;
 };
-const jqDivsHit = function (div1: JQObject, div2: JQObject) { // axis aligned, div1/2 are jQuery objects
-    const d1Left = div1.offset().left;
-    const d1Right = d1Left + div1.outerWidth(true);
-    const d1Top = div1.offset().top;
-    const d1Bottom = d1Top + div1.outerHeight(true);
+const jqObjsCollideAxisAligned = function (obj1: JQObject, obj2: JQObject) {
+    // obj1/2 must be axis aligned jQuery objects
+    const d1Left = obj1.offset().left;
+    const d1Right = d1Left + obj1.outerWidth(true);
+    const d1Top = obj1.offset().top;
+    const d1Bottom = d1Top + obj1.outerHeight(true);
 
-    const d2Left = div2.offset().left;
-    const d2Right = d2Left + div2.outerWidth(true);
-    const d2Top = div2.offset().top;
-    const d2Bottom = d2Top + div2.outerHeight(true);
+    const d2Left = obj2.offset().left;
+    const d2Right = d2Left + obj2.outerWidth(true);
+    const d2Top = obj2.offset().top;
+    const d2Bottom = d2Top + obj2.outerHeight(true);
 
     return !(d1Bottom < d2Top || d1Top > d2Bottom || d1Right < d2Left || d1Left > d2Right);
 };
@@ -877,9 +878,11 @@ const jqDivsHit = function (div1: JQObject, div2: JQObject) { // axis aligned, d
 type DOMObject = {
     getBoundingClientRect: () => { left: number, top: number, right: number, bottom: number };
 };
-const divsHit = function (div1: DOMObject, div2: DOMObject) { // axis aligned, div1/2 are DOM objects
-    const r1 = div1.getBoundingClientRect();
-    const r2 = div2.getBoundingClientRect();
+const domObjsCollideAxisAligned = function (obj1: DOMObject, obj2: DOMObject) {
+    // obj1/2 are DOM objects, possibly rotated
+    // collision is checked via axis aligned bounding rects
+    const r1 = obj1.getBoundingClientRect();
+    const r2 = obj2.getBoundingClientRect();
     return !(r1.bottom < r2.top || r1.top > r2.bottom || r1.right < r2.left || r1.left > r2.right);
 };
 
@@ -890,7 +893,7 @@ export const forEachSpriteSpriteCollisionDo = (
     sprite2Name: string,
     collisionHandlingFunction: CollisionHandlingFn
 ): void => {
-    $(spriteFilterHitAxisAlignedRect(sprite1Name, ".gQ_group, #" + sprite2Name)).each(collisionHandlingFunction);
+    $(spriteFilteredCollision(sprite1Name, ".gQ_group, #" + sprite2Name)).each(collisionHandlingFunction);
     // collisionHandlingFunction can optionally take two arguments: collIndex, hitSprite
     // see http://api.jquery.com/jQuery.each
 };
@@ -911,7 +914,7 @@ export const forEachSpriteGroupCollisionDo = (
     groupName: string,
     collisionHandlingFunction: CollisionHandlingFn
 ): void => {
-    $(spriteFilterHitAxisAlignedRect(sprite1Name, "#" + groupName + ", .gQ_sprite")).each(collisionHandlingFunction);
+    $(spriteFilteredCollision(sprite1Name, "#" + groupName + ", .gQ_sprite")).each(collisionHandlingFunction);
     // collisionHandlingFunction can optionally take two arguments: collIndex, hitSprite
     // see http://api.jquery.com/jQuery.each
 };
@@ -922,20 +925,18 @@ export const forEachSpriteFilteredCollisionDo = (
     filterStr: string,
     collisionHandlingFunction: CollisionHandlingFn
 ): void => {
-    $(spriteFilterHitAxisAlignedRect(sprite1Name, filterStr)).each(collisionHandlingFunction);
+    $(spriteFilteredCollision(sprite1Name, filterStr)).each(collisionHandlingFunction);
     // see http://gamequeryjs.com/documentation/api/#collision for filterStr spec
     // collisionHandlingFunction can optionally take two arguments: collIndex, hitSprite
     // see http://api.jquery.com/jQuery.each
 };
 export const forEachSpriteFilteredHit = forEachSpriteFilteredCollisionDo;
 
-const spriteFilterHitAxisAlignedRect = function (sprite1Name: string, filterStr: string): DOMObject[] {
+const spriteFilteredCollision = function (sprite1Name: string, filter: string): DOMObject[] {
     // Fixes GQ's collision function, because GQ's collide function is badly broken when sprites are rotated/scaled
     // The fix is to check collision using axis aligned rectangular hit boxes.
     // Not great for rotated sprites, but good enough for now.
     const s1 = $("#" + sprite1Name);
-    const filter = filterStr;
-
     var resultList = [];
 
     //if (this !== $.gameQuery.playground) {
@@ -957,15 +958,17 @@ const spriteFilterHitAxisAlignedRect = function (sprite1Name: string, filterStr:
                         /*var distance = Math.sqrt(Math.pow(offsetY + gameQuery.boundingCircle.y - elementsToCheck[i].offsetY - elementToCheck.gameQuery.boundingCircle.y, 2) + Math.pow(offsetX + gameQuery.boundingCircle.x - elementsToCheck[i].offsetX - elementToCheck.gameQuery.boundingCircle.x, 2));
                         if (distance - gameQuery.boundingCircle.radius - elementToCheck.gameQuery.boundingCircle.radius <= 0) {
                         */
-                        // Check real collision
-                        if (divsHit(s1[0], elementToCheck)) {
+                        const s1Rect = s1[0].getBoundingClientRect();
+                        const e2Rect = elementToCheck.getBoundingClientRect();
+                        if (!(s1Rect.bottom < e2Rect.top || s1Rect.top > e2Rect.bottom
+                            || s1Rect.right < e2Rect.left || s1Rect.left > e2Rect.right)) {
+                            // Check real collision
                             //if (collide(gameQuery, { x: offsetX, y: offsetY }, elementToCheck.gameQuery, { x: elementsToCheck[i].offsetX, y: elementsToCheck[i].offsetY })) {
                             // GQ's collide is very broken if rotation applied
 
-                            // Add to the result list if collision detected
-                            resultList.push(elementsToCheck[i][subLen]);
+                                // Add to the result list if collision detected
+                                resultList.push(elementsToCheck[i][subLen]);
                         }
-                        //}
                     }
                 }
                 // Add the children nodes to the list
