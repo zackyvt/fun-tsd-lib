@@ -1379,8 +1379,8 @@ export const createOvalInGroup = (
     spriteSetWidthHeight(id, w, h);
     spriteSetXY(id, x, y);
 
-    if (rotdeg) {
-        if (rotOriginX && rotOriginY) {
+    if (rotdeg != null) {
+        if (rotOriginX != null && rotOriginY != null) {
             var rotOrigin = rotOriginX + "px " + rotOriginY + "px";
             sprite(id)
                 .css("-webkit-transform-origin", rotOrigin)
@@ -1535,8 +1535,8 @@ export const createRectInGroup = (
     spriteSetWidthHeight(id, w, h);
     spriteSetXY(id, x, y);
 
-    if (rotdeg) {
-        if (rotOriginX && rotOriginY) {
+    if (rotdeg != null) {
+        if (rotOriginX != null && rotOriginY != null) {
             var rotOrigin = rotOriginX + "px " + rotOriginY + "px";
             sprite(id)
                 .css("-webkit-transform-origin", rotOrigin)
