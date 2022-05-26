@@ -785,6 +785,31 @@ export const spriteSetWidthHeight = (
     $("#" + spriteName).wh(wval, hval);
 };
 
+export const spriteFlipVertical = (spriteName: string, flipped: boolean): void => {
+    if (GQG_DEBUG) {
+        throwIfSpriteNameInvalid(spriteName);
+    }
+    $("#" + spriteName).flipv(flipped);
+};
+export const spriteFlipHorizontal = (spriteName: string, flipped: boolean): void => {
+    if (GQG_DEBUG) {
+        throwIfSpriteNameInvalid(spriteName);
+    }
+    $("#" + spriteName).fliph(flipped);
+};
+export const spriteGetFlipVertical = (spriteName: string): void => {
+    if (GQG_DEBUG) {
+        throwIfSpriteNameInvalid(spriteName);
+    }
+    return $("#" + spriteName).flipv();
+};
+export const spriteGetFlipHorizontal = (spriteName: string): void => {
+    if (GQG_DEBUG) {
+        throwIfSpriteNameInvalid(spriteName);
+    }
+    return $("#" + spriteName).fliph();
+};
+
 export const spriteRotate = (
     spriteName: string,
     angleDegrees: number
