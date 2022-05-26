@@ -396,8 +396,7 @@ export const createSpriteInGroup: CreateSpriteInGroupFn = function (
         } else if (arguments.length === 3) {
             if (typeof arguments[2] !== "object") {
                 throwConsoleErrorInMyprogram("Third argument for createSpriteInGroup expected to be a dictionary. Instead found: " + arguments[2]);
-            } else if (theAnimation instanceof Object && (!("imageURL" in theAnimation) || typeof (theAnimation["imageURL"]) !== "string")) {
-                throwConsoleErrorInMyprogram("Third argument for createSpriteInGroup expected to be a dictionary. Instead found this animation: " + theAnimation + ". Maybe wrong number of arguments provided? Check API documentation for details of parameters.");
+                throwConsoleErrorInMyprogram("Third argument for createSpriteInGroup expected to be a dictionary. Instead found this animation: " + theAnimation + " with imageURL: " + theAnimation["imageURL"] + ". Maybe wrong number of arguments provided? Check API documentation for details of parameters.");
             } // else hope it's a proper standard options map
         } else {
             throwConsoleErrorInMyprogram("Wrong number of arguments used for createSpriteInGroup. Check API documentation for details of parameters.");
