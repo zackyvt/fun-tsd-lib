@@ -101,7 +101,8 @@ const exportedNames = [
     "ANIMATION_ONCE",
     "ANIMATION_PINGPONG",
     "ANIMATION_CALLBACK",
-    "ANIMATION_MULTI"
+    "ANIMATION_MULTI",
+    "Xperimental"
 ];
 
 const Fn: Record<string, any> = {};

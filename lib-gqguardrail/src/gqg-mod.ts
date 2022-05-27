@@ -2330,3 +2330,59 @@ export const drawInterpolatedGraph: DrawInterpolatedGraphFn = function (
         opts as CreateGraphWithOptionsFnParamTypes
     );
 };
+
+export const Xperimental = {
+    makeSoundResource: function (soundName: string, url: string, audioType: "mpeg" | "wav"): void {
+        if (GQG_DEBUG) {
+            if (typeof (soundName) !== "string") {
+                throwConsoleErrorInMyprogram("First argument for makeSoundResource must be a String. Instead found: " + soundName);
+            }
+            if (!spriteGroupNameFormatIsValid(soundName)) {
+                throwConsoleErrorInMyprogram("Sound name given to makeSoundResource is in wrong format: " + soundName);
+            }
+            if (spriteExists(soundName)) {
+                throwConsoleErrorInMyprogram("makeSoundResource cannot create sound with a duplicate name of: " + soundName);
+            }
+            if (typeof (url) !== "string") {
+                throwConsoleErrorInMyprogram("Second argument for makeSoundResource must be a String. Instead found: " + url);
+            }
+        }
+        const audio = $("<audio/>").attr("id", soundName);
+        const source = $("<source/>").attr("type", "audio/" + audioType).attr("src", url);
+        const throwableErr = new Error("image file not found: " + url);
+
+        audio.on("error", function () {
+            if (!!throwableErr && throwableErr.stack &&
+                throwableErr.stack.toString().indexOf("myprogram.js") >= 0) {
+                throwableErr.message = GQG_ERROR_IN_MYPROGRAM_MSG + throwableErr.message;
+            }
+            throw throwableErr;
+        }).append(source);
+
+        $("body").append(audio);
+    },
+    playSound: function (soundName: string): void {
+        if (GQG_DEBUG) {
+            throwIfSpriteNameInvalid(soundName);
+        }
+        $("#" + soundName).get(0).play();
+    },
+    pauseSound: function (soundName: string): void {
+        if (GQG_DEBUG) {
+            throwIfSpriteNameInvalid(soundName);
+        }
+        $("#" + soundName).get(0).pause();
+    },
+    resetSound: function (soundName: string): void {
+        if (GQG_DEBUG) {
+            throwIfSpriteNameInvalid(soundName);
+        }
+        $("#" + soundName).get(0).currentTime = 0;
+    },
+    resetSoundTo: function (soundName: string, time: number): void {
+        if (GQG_DEBUG) {
+            throwIfSpriteNameInvalid(soundName);
+        }
+        $("#" + soundName).get(0).currentTime = time;
+    }
+}
