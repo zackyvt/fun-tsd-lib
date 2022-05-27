@@ -2347,7 +2347,7 @@ export const Xperimental = {
                 throwConsoleErrorInMyprogram("Second argument for makeSoundResource must be a String. Instead found: " + url);
             }
         }
-        const throwableErr = new Error("image file not found: " + url);
+        const throwableErr = new Error("audio file not found: " + url);
         const audio = $("<audio/>").attr("id", soundName);
         const source = $("<source/>").attr("type", "audio/" + audioType).attr("src", url).on("error", function () {
             if (!!throwableErr && throwableErr.stack &&
