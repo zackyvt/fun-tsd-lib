@@ -2347,18 +2347,17 @@ export const Xperimental = {
                 throwConsoleErrorInMyprogram("Second argument for makeSoundResource must be a String. Instead found: " + url);
             }
         }
-        const audio = $("<audio/>").attr("id", soundName);
-        const source = $("<source/>").attr("type", "audio/" + audioType).attr("src", url);
         const throwableErr = new Error("image file not found: " + url);
-
-        audio.on("error", function () {
+        const audio = $("<audio/>").attr("id", soundName);
+        const source = $("<source/>").attr("type", "audio/" + audioType).attr("src", url).on("error", function () {
             if (!!throwableErr && throwableErr.stack &&
                 throwableErr.stack.toString().indexOf("myprogram.js") >= 0) {
                 throwableErr.message = GQG_ERROR_IN_MYPROGRAM_MSG + throwableErr.message;
             }
             throw throwableErr;
-        }).append(source);
+        });
 
+        audio.append(source);
         $("body").append(audio);
     },
     playSound: function (soundName: string): void {
