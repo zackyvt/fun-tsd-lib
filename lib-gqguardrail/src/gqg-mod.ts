@@ -1049,8 +1049,9 @@ export const forEachSpriteFilteredHit = forEachSpriteFilteredCollisionDo;
 const spriteFilteredCollision = function (sprite1Name: string, filter: string): DOMObject[] {
     // Based on and fixes GQ's collision function, because GQ's collide 
     // function is badly broken when sprites are rotated/scaled
-    // The fix is to check collision using axis aligned rectangular hit boxes.
-    // Not great for rotated sprites, but good enough for now.
+    // The fix is to check collision using axis aligned rectangular hit boxes as a rough check.
+    // Then use gqObjsCollide fn to check "real" rectangular hit of possibly rotated sprites.
+    // gqObjsCollide is a corrected version of GQ's implementation.
     const s1 = $("#" + sprite1Name);
     var resultList = [];
 
@@ -2331,7 +2332,7 @@ export const drawInterpolatedGraph: DrawInterpolatedGraphFn = function (
     );
 };
 
-export const Xperimental = {
+export const Xperimental = { // possibly sound functions will be namespaced into Websnd, but is experimental for now:
     makeSoundResource: function (soundName: string, url: string, audioType: "mpeg" | "wav"): void {
         if (GQG_DEBUG) {
             if (typeof (soundName) !== "string") {
